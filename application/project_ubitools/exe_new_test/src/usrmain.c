@@ -79,7 +79,7 @@ mutex_pt _g_mutex;
 	Calibration Definition
  ------------------------------------------------------------------------- */
 #define MOTOR_GAIN 1000
-#define TIME_OUT 1000
+#define TIME_OUT 300
 #define ROTATE_GAIN1 1
 #define ROTATE_GAIN2 200
 /* -------------------------------------------------------------------------
@@ -120,6 +120,7 @@ int usrmain(int argc, char * argv[]) {
 
 	glcd_init();
 	motor_init();
+	encoder_init();
 	mutex_create(&_g_mutex);
 
 	r = task_create(NULL, lcd_outputtask, NULL, task_getmiddlepriority(), 256, "lcd");
@@ -234,22 +235,35 @@ void bin_status()
 	BT_DATA_SEND(INIT_ROLE_PERIPHERAL, print_packet);
 }
 
-void motor_turn(int port,int degree)
+void motor_turn(int port, int degree)
 {
 	int timeout = 0;
 	int diff_degree=0;
 	int speed = 0;
-
-	printf("rotate start : %d \r\n",degree);
-	timeout = TIME_OUT;
+	int buff = 0;
+	int swt = 1;
+	int deg_buf = degree;
+	buff = encoder_get(port);
+	printf("rotate %d ready : enc %d \r\n",degree,buff);
 	encoder_reset(port);
+	buff = encoder_get(port);
+	printf("rotate %d start : enc %d\r\n",degree,buff);
+	timeout = TIME_OUT;
+	if (deg_buf > 0)
+	{
+		deg_buf *= -1;
+		swt = -1;
+	}
+
 	do{
-		diff_degree = (encoder_get(port)) + (degree * ROTATE_GAIN1);
-		speed = ROTATE_GAIN2 * diff_degree;
+		buff = encoder_get(port);
+		diff_degree = (buff) - (deg_buf * ROTATE_GAIN1);
+		speed = ROTATE_GAIN2 * diff_degree * swt;
+		printf("rotate %d progress : swt %d enc %d diff %d speed %d time %d \r\n",degree,swt,buff,diff_degree, speed, timeout);
 		motor_set(port,speed);
 		timeout--;
 		bsp_busywaitms(10);
-	} while ((diff_degree != 0)&&(timeout != 0));
+	} while ((diff_degree > 0)&&(timeout != 0));
 	printf(" > rotate complete\r\n");
 	motor_set(port,0);
 }
