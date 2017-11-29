@@ -72,13 +72,16 @@
 uint8_t print_packet[DATA_SEND_BUFFER_SIZE] = {0,};
 msgq_pt BT_user_event_queue;
 mutex_pt _g_mutex;
-#define R_MOTOR_PORT   0
+#define MOTOR_PORT   0
+#define S_SENSOR_PORT	0
+#define L_SENSOR_PORT	2
 /* -------------------------------------------------------------------------
 	Calibration Definition
  ------------------------------------------------------------------------- */
 #define MOTOR_GAIN 1000
-
-
+#define TIME_OUT 1000
+#define ROTATE_GAIN1 1
+#define ROTATE_GAIN2 200
 /* -------------------------------------------------------------------------
 	State Definition
  ------------------------------------------------------------------------- */
@@ -216,21 +219,37 @@ void bin_control()
 
 void bin_open()
 {
-	motor_set(R_MOTOR_PORT, MOTOR_GAIN);
-	bsp_busywaitms(1000);
-	motor_set(R_MOTOR_PORT, 0);
+	motor_turn(MOTOR_PORT,-90);
 	binState = BIN_OPEN;
 }
 
 void bin_close()
 {
-	motor_set(R_MOTOR_PORT, -1*MOTOR_GAIN);
-	bsp_busywaitms(1000);
-	motor_set(R_MOTOR_PORT, 0);
+	motor_turn(MOTOR_PORT,90);
 	binState = BIN_CLOSE;
 }
 void bin_status()
 {
 	print_packet[0] = binState;
 	BT_DATA_SEND(INIT_ROLE_PERIPHERAL, print_packet);
+}
+
+void motor_turn(int port,int degree)
+{
+	int timeout = 0;
+	int diff_degree=0;
+	int speed = 0;
+
+	printf("rotate start : %d \r\n",degree);
+	timeout = TIME_OUT;
+	encoder_reset(port);
+	do{
+		diff_degree = (encoder_get(port)) + (degree * ROTATE_GAIN1);
+		speed = ROTATE_GAIN2 * diff_degree;
+		motor_set(port,speed);
+		timeout--;
+		bsp_busywaitms(10);
+	} while ((diff_degree != 0)&&(timeout != 0));
+	printf(" > rotate complete\r\n");
+	motor_set(port,0);
 }
