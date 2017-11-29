@@ -3,7 +3,7 @@ Smart Trash Bin By Ubinos
 
 current Version : 0.0.1
 
-- [License] (#License)
+- [License] (#license)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [TODO](#todo)
