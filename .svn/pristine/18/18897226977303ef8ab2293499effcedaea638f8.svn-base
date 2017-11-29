@@ -1,0 +1,20 @@
+/*
+ * lib_ultrasonic.h
+ *
+ *  Created on: 2015. 7. 15.
+ *      Author: minsu
+ */
+
+#ifndef APPLICATION_SORA_LIB_ULTRASONIC_SENSOR_ITF_LIB_ULTRASONIC_SENSOR_H_
+#define APPLICATION_SORA_LIB_ULTRASONIC_SENSOR_ITF_LIB_ULTRASONIC_SENSOR_H_
+
+#include "lib_ubi_pio/itf/lib_ubi_pio.h"
+
+void delay_us(unsigned int time_us);
+
+void timer_for_ultrasonic_sensor_init(void);
+
+void ultrasonic_sequence(Pin* p, PinUbi* pu);
+
+
+#endif /* APPLICATION_SORA_LIB_ULTRASONIC_SENSOR_ITF_LIB_ULTRASONIC_SENSOR_H_ */

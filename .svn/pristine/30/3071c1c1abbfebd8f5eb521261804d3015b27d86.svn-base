@@ -1,0 +1,138 @@
+/*
+  Copyright (C) 2009 Sung Ho Park
+  Contact: ubinos.org@gmail.com
+
+  This file is part of the exe_helloworld component of the Ubinos.
+
+  GNU General Public License Usage
+  This file may be used under the terms of the GNU
+  General Public License version 3.0 as published by the Free Software
+  Foundation and appearing in the file license_gpl3.txt included in the
+  packaging of this file. Please review the following information to
+  ensure the GNU General Public License version 3.0 requirements will be
+  met: http://www.gnu.org/copyleft/gpl.html.
+
+  GNU Lesser General Public License Usage
+  Alternatively, this file may be used under the terms of the GNU Lesser
+  General Public License version 2.1 as published by the Free Software
+  Foundation and appearing in the file license_lgpl.txt included in the
+  packaging of this file. Please review the following information to
+  ensure the GNU Lesser General Public License version 2.1 requirements
+  will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+
+  Commercial Usage
+  Alternatively, licensees holding valid commercial licenses may
+  use this file in accordance with the commercial license agreement
+  provided with the software or, alternatively, in accordance with the
+  terms contained in a written agreement between you and rightful owner.
+*/
+
+/* -------------------------------------------------------------------------
+	Include
+ ------------------------------------------------------------------------- */
+#include "../ubiconfig.h"
+
+// standard c library include
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <sam4e.h>
+
+// ubinos library include
+#include "itf_ubinos/itf/bsp.h"
+#include "itf_ubinos/itf/ubinos.h"
+#include "itf_ubinos/itf/bsp_fpu.h"
+// chipset driver include
+#include "ioport.h"
+#include "pio/pio.h"
+
+// new estk driver include
+#include "lib_new_estk_api/itf/new_estk_led.h"
+#include "lib_new_estk_api/itf/new_estk_glcd.h"
+#include "lib_motor_driver/itf/lib_motor_driver.h"
+#include "lib_ubi_pio/itf/lib_ubi_pio.h"
+// custom library header file include
+#include "../../lib_ata5279c/itf/lib_ata5279c.h"
+#include "../../lib_sora_support/itf/lib_sora_ext_sw.h"
+#include "../../lib_ultrasonic_sensor/itf/lib_ultrasonic_sensor.h"
+#include "../../../../kernel/porting/lib_sam4e/sam/utils/cmsis/sam4e/include/component/tc.h"
+
+/* -------------------------------------------------------------------------
+	Global variables
+ ------------------------------------------------------------------------- */
+
+
+#define PC23	23
+PinUbi p1_u = {PORTC,PC23,UBI_PIO_DEFAULT};
+Pin p1 = {PIO_PC23,PIOC,ID_PIOC,PIO_INPUT,PIO_DEGLITCH|PIO_DEBOUNCE};
+unsigned int pulse_end=0;
+float distance=0;
+
+static sem_pt sem_ultra=NULL;
+/* -------------------------------------------------------------------------
+	Prototypes
+ ------------------------------------------------------------------------- */
+void ultrasonic_isr(void);
+static void rootfunc(void * arg);
+
+int usrmain(int argc, char * argv[]) {
+	int r;
+
+	printf("\n\n\n\r");
+	printf("================================================================================\n\r");
+	printf("exe_soro_ultrasonic_test (build time: %s %s)\n\r", __TIME__, __DATE__);
+	printf("================================================================================\n\r");
+
+	r = task_create(NULL, rootfunc, NULL, task_getmiddlepriority(), 256, "root");
+	if (0 != r) {
+		logme("fail at task_create\r\n");
+	}
+
+	r = semb_create(&sem_ultra);
+	led_init();
+	ubi_pio_input_config(p1_u.port,p1_u.pin_num,p1_u.attr);
+	ubi_pio_interrupt_config(p1_u.port,p1_u.pin_num,UBI_PIO_PULL_UP,ultrasonic_isr);
+	pio_disable_interrupt(p1.pio,p1.mask);
+	timer_for_ultrasonic_sensor_init();
+	ubik_fpu_enable();
+	ubik_comp_start();
+
+	/* Code below ubik_comp_start function never be executed */
+
+	return 0;
+}
+
+static void rootfunc(void * arg) {
+
+	for(;;){
+		ultrasonic_sequence(&p1,&p1_u);
+
+		sem_take_timedms(sem_ultra,20);
+
+		pio_disable_interrupt(p1.pio,p1.mask);
+
+
+		distance = (331.5f+0.60714f*25.0f)*((float)pulse_end*2.667f)/2000.0f;
+		printf("distance : %d\r\n",(int)distance);
+
+		task_sleep(50);
+	}
+}
+
+void ultrasonic_isr(void){
+
+	int dummy;
+
+	if((PIOC->PIO_PDSR & p1.mask) != 0){
+		dummy=TC0->TC_CHANNEL[1].TC_SR;
+		TC0->TC_CHANNEL[1].TC_CCR=TC_CCR_CLKEN;
+		TC0->TC_CHANNEL[1].TC_CCR=TC_CCR_SWTRG;
+		led_on(LED1);
+	}
+	else{
+		TC0->TC_CHANNEL[1].TC_CCR=TC_CCR_CLKDIS;
+		pulse_end = TC0->TC_CHANNEL[1].TC_CV;
+		led_on(LED2);
+		sem_give(sem_ultra);
+	}
+}

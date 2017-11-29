@@ -1,0 +1,339 @@
+/*
+ * lib_smartbelt_hw.c
+ *
+ *  Created on: 2015. 6. 2.
+ *      Author: geoyun
+ */
+
+#include "../ubiconfig.h"
+
+#include <stdio.h>
+#include <stdint.h>
+#include <sam4e.h>
+
+#include "itf_ubinos/itf/bsp.h"
+#include "itf_ubinos/itf/ubinos.h"
+#include "sysclk.h"
+
+#include "lib_i2c_master/itf/lib_i2c_master.h"
+#include "lib_i2c_master/itf/lib_sam4e16e_board.h"
+#include "lib_ubi_pio/itf/lib_ubi_pio.h"
+
+#include "pio/pio.h"
+
+#include "../itf/lib_smartbelt_profile.h"
+#include "../itf/lib_smartbelt_protocol.h"
+
+/* for test */
+hrtick_t pre_tick;
+hrtick_t now_tick;
+hrtick_t show_tick;
+
+/* I2C profile */
+#define SMARTBELT_I2C_INDEX					TWI_PORT_0
+#define	SMARTBELT_I2C_PERIPHERAL_ADDRESS	0x12
+
+/* internal sem_pt to use ack */
+#define	ACK_TIMEOUT		50
+sem_pt acksignal_on_sem_pt;
+sem_pt acksignal_off_sem_pt;
+
+/* internal msgq_pt to use wakeup */
+#define	SMARTBELT_WAKEUP_SIZE	5
+#define	SMARTBELT_WAKEUP_COUNT	5
+#define	SMARTBELT_WAKEUP_STATE	0
+msgq_pt msgformWakeUp_msgq_pt;
+
+uint8_t ack_ready_flag = 0;
+#define	SMARTBELT_ACK_ON_FLAG				1
+#define	SMARTBELT_ACK_OFF_FLAG				0
+
+sem_pt request_sem_pt;
+
+/* mutex */
+mutex_pt checkUnpluged_mutex_pt;
+
+/*
+ * It is responded by only peripheral pin signal
+ * */
+static void smartbelt_ACK_Handler(uint32_t id, uint32_t mask) {
+	int r;
+
+	r = ubi_pio_getPin(SMARTBELT_ACK_PORT_INDEX, SMARTBELT_ACK_PIN_INDEX,
+	UBI_PIO_INPUT);
+	if (mask == SMARTBELT_ACK_PIN_MASK) {
+		if (r == 0) {
+			sem_clear(acksignal_on_sem_pt);
+			sem_give(acksignal_on_sem_pt);
+		} else {
+			sem_clear(acksignal_off_sem_pt);
+			sem_give(acksignal_off_sem_pt);
+		}
+	}
+}
+
+/*
+ * WakeUp receive WakeUpSignal from peripheral module.
+ * Find who wake main module up
+ * */
+/* From WakeUp Handler To manager  */
+/* *********************************************************************************************
+ | STATE | ID | LENGH | DATA 0 | DATA 1 | DATA 2 | DATA 3 | DATA 4 | DATA 5 | DATA 6 | DATA 7 |
+ *********************************************************************************************
+ | REQ   | 0  |   4   | RQPIN0 | RQPIN1 | RQPIN2 | RQPIN3 |  NULL  |  NULL  |  NULL  |  NULL  |
+ *********************************************************************************************/
+#define	__PIN_STATE_DATA_SIZE	4
+static void smartbelt_WakeUp_Handler(uint32_t id, uint32_t mask) {
+	int r;
+
+	uint8_t packet_buffer[SMARTBELT_PACKET_MSG_SIZE] = { 0, };
+	packet_buffer[SMARTBELT_PACKET_STATE_INDEX] = SMARTBELT_STATE_REQUEST;
+	packet_buffer[SMARTBELT_PACKET_LENGH_INDEX] = SMARTBELT_MODULE_COUNT;
+
+	uint32_t port;
+
+	/* Check which peripheral module send request signal.
+	 * The signal can be nested.
+	 * And then manager select highest priority peripheral module.
+	 * */
+	ubi_pio_togglePin(PORTD, 31);
+	if (mask == SMARTBELT_WAKEUP_PIN_MASK) {
+		/* wake up pin level */
+		port = ubi_pio_getPort(SMARTBELT_REQUEST_PORT_INDEX, UBI_PIO_INPUT);
+		memcpy(&packet_buffer[SMARTBELT_PACKET_DATA0_INDEX], &port,
+		__PIN_STATE_DATA_SIZE);
+		smartbelt_sendMsgq(packet_buffer);
+	}
+}
+
+/*  send peripheral on signal to selected peripheral module
+ * and wait ACK signal.
+ * */
+#define ACKON		0
+#define	ACKOFF		1
+#define ACKSUCCESS	0
+#define	ACKFAIL	-1
+#define	ACK_DEFAULT_LEVEL	1
+#define COUNT_OUT		20
+static int smartbelt_waitPeripheral_on(uint8_t pin) {
+	int r = 0;
+	uint8_t count = 0;
+
+	/* config fall interrupt */
+	ubi_pio_interrupt_reconfig(SMARTBELT_ACK_PORT_INDEX,
+	SMARTBELT_ACK_PIN_INDEX, SMARTBELT_ACK_ATTR_FALL);
+
+	/* send peripheral on */
+	ubi_pio_clearPin(SMARTBELT_PERIPHERAL_PORT_INDEX, pin);
+	do {
+		r = sem_take_timedms(acksignal_on_sem_pt, ACK_TIMEOUT);
+		count++;
+	} while ((E__SUCCESS != r) & (COUNT_OUT > count));
+
+	return r;
+}
+
+/*  send peripheral off signal to selected peripheral module
+ * and wait ACK signal
+ * */
+static int smartbelt_waitPeripheral_off(uint8_t pin) {
+	int r;
+	uint8_t count = 0;
+
+	/* config rise interrupt */
+	ubi_pio_interrupt_reconfig(SMARTBELT_ACK_PORT_INDEX,
+	SMARTBELT_ACK_PIN_INDEX, SMARTBELT_ACK_ATTR_RISE);
+
+	/* send peripheral off */
+	ubi_pio_setPin(SMARTBELT_PERIPHERAL_PORT_INDEX, pin);
+
+	do {
+		r = sem_take_timedms(acksignal_off_sem_pt, ACK_TIMEOUT);
+		count++;
+	} while ((r != E__SUCCESS) & (COUNT_OUT < count));
+
+	return r;
+}
+
+int smartbelt_checkPeripheralModule(uint8_t pin)
+{
+	int r = -1;
+
+	mutex_lock(checkUnpluged_mutex_pt);
+	r = smartbelt_waitPeripheral_on(pin);
+	smartbelt_waitPeripheral_off(pin);
+	mutex_unlock(checkUnpluged_mutex_pt);
+
+	return r;
+}
+
+static int smartbelt_waitRequestACK(void) {
+	int r;
+	int result;
+	r = sem_take(request_sem_pt);
+	if (r != 0) {
+		logme("fail at sem_take\r\n");
+	}
+
+	return ACKSUCCESS;
+}
+
+/* select peripheral module and start i2c */
+static void _smartbelt_transfer_loop(uint8_t *pTxBuffer) {
+
+	int r;
+
+	uint8_t _module_location;
+
+	uint8_t pRxBuffer[SMARTBELT_PACKET_MSG_SIZE] = {0,};
+
+	/* find peripheral pin */
+	_module_location = smartbelt_getModuleLocation(
+			pTxBuffer[SMARTBELT_PACKET_ID_INDEX]);
+
+	mutex_lock(checkUnpluged_mutex_pt);
+	/* start transfer loop */
+	/* select peripheral */
+	r = smartbelt_waitPeripheral_on(_module_location);
+
+	if (0 != r) {
+		pRxBuffer[SMARTBELT_PACKET_STATE_INDEX] = SMARTBELT_STATE_PLUGOUT;
+		pRxBuffer[SMARTBELT_PACKET_LOCATION] = _module_location;
+		smartbelt_sendMsgq(pRxBuffer);
+		r = smartbelt_waitPeripheral_off(_module_location);
+	} else {
+		bsp_busywaitms(10);
+		/* trasfor peripheral */
+		/* write read i2c */
+		r = ubi_twim_write_bytes(SMARTBELT_I2C_INDEX,
+		SMARTBELT_I2C_PERIPHERAL_ADDRESS, 0, 0, pTxBuffer,
+		SMARTBELT_PACKET_TRANSFER_SIZE);
+
+		/* wait request ack */
+		r = ubi_twim_read_bytes(SMARTBELT_I2C_INDEX,
+		SMARTBELT_I2C_PERIPHERAL_ADDRESS, 0, 0, pRxBuffer,
+		SMARTBELT_PACKET_TRANSFER_SIZE);
+		/* disable peripheral */
+		r = smartbelt_waitPeripheral_off(_module_location);
+		/* end transfer loop */
+
+		/* send transfer result */
+		pRxBuffer[SMARTBELT_PACKET_LOCATION] = _module_location;
+		smartbelt_sendMsgq(pRxBuffer);
+	}
+	mutex_unlock(checkUnpluged_mutex_pt);
+}
+
+/* send peripheral
+ * receive ack
+ * trasfer via i2c
+ */
+static void smartbelt_transfer_task(void) {
+	int r;
+	int i = 0, j = 0;
+	int countr = 0;
+	int countw = 0;
+	uint8_t msgfromManager_buffer[SMARTBELT_PACKET_MSG_SIZE] = { 0, };
+
+	uint8_t _index;
+	uint8_t _peripheral_pin;
+	uint8_t _module_location;
+
+	for (;;) {
+		r = msgq_receive(msgTransfer_msgq_pt, msgfromManager_buffer);
+		if (0 != r) {
+			logme("fail at msgq_receive\r\n");
+		}
+
+		/* transfer data */
+		_smartbelt_transfer_loop(msgfromManager_buffer);
+		/* send result to manager */
+	}
+}
+
+static void smartbelt_i2c_init(void) {
+	ubi_twim_init(SMARTBELT_I2C_INDEX, 0);
+}
+
+static void smartbelt_gpio_init(void) {
+	/* init output peripheral pin */
+	ubi_pio_output_config(SMARTBELT_PERIPHERAL_PORT_INDEX,
+	SMARTBELT_PERIPHERAL_PIN0_INDEX, 1, 0);
+	ubi_pio_output_config(SMARTBELT_PERIPHERAL_PORT_INDEX,
+	SMARTBELT_PERIPHERAL_PIN1_INDEX, 1, 0);
+	ubi_pio_output_config(SMARTBELT_PERIPHERAL_PORT_INDEX,
+	SMARTBELT_PERIPHERAL_PIN2_INDEX, 1, 0);
+	ubi_pio_output_config(SMARTBELT_PERIPHERAL_PORT_INDEX,
+	SMARTBELT_PERIPHERAL_PIN3_INDEX, 1, 0);
+
+	/* init input request pin */
+	ubi_pio_input_config(SMARTBELT_REQUEST_PORT_INDEX,
+	SMARTBELT_REQUEST_PIN0_INDEX, SMARTBELT_REQUEST_ATTR);
+	ubi_pio_input_config(SMARTBELT_REQUEST_PORT_INDEX,
+	SMARTBELT_REQUEST_PIN1_INDEX, SMARTBELT_REQUEST_ATTR);
+	ubi_pio_input_config(SMARTBELT_REQUEST_PORT_INDEX,
+	SMARTBELT_REQUEST_PIN2_INDEX, SMARTBELT_REQUEST_ATTR);
+	ubi_pio_input_config(SMARTBELT_REQUEST_PORT_INDEX,
+	SMARTBELT_REQUEST_PIN3_INDEX, SMARTBELT_REQUEST_ATTR);
+
+	/* init input ACK pin */
+	ubi_pio_input_config(SMARTBELT_ACK_PORT_INDEX, SMARTBELT_ACK_PIN_INDEX,
+	SMARTBELT_ACK_ATTR);
+
+	/* init interrupt ACK pin */
+	ubi_pio_interrupt_config(SMARTBELT_ACK_PORT_INDEX, SMARTBELT_ACK_PIN_INDEX,
+	SMARTBELT_ACK_ATTR_FALL, smartbelt_ACK_Handler);
+
+	/* init input wakeup pin */
+	ubi_pio_input_config(SMARTBELT_WAKEUP_PORT_INDEX,
+	SMARTBELT_WAKEUP_PIN_INDEX, SMARTBELT_WAKEUP_ATTR);
+
+	/* init interrupt wakeup pin */
+	ubi_pio_interrupt_config(SMARTBELT_WAKEUP_PORT_INDEX,
+	SMARTBELT_WAKEUP_PIN_INDEX, SMARTBELT_WAKEUP_ATTR_RISE,
+			smartbelt_WakeUp_Handler);
+}
+
+void smartbelt_hw_init(void) {
+	int r;
+
+	r = task_create(NULL, smartbelt_transfer_task, NULL,
+			task_gethighestpriority(), 256, "sb_data");
+	if (0 != r) {
+		logme("fail at task_create\r\n");
+	}
+
+	r = msgq_create(&msgTransfer_msgq_pt, SMARTBELT_PACKET_MSG_SIZE,
+	SMARTBELT_MANAGER_COUNT);
+	if (0 != r) {
+		logme("fail at msgq_create\r\n");
+	}
+
+	r = sem_create(&acksignal_on_sem_pt);
+	if (0 != r) {
+		logme("fail at sem_cerate\r\n");
+	}
+
+	r = sem_create(&acksignal_off_sem_pt);
+	if (0 != r) {
+		logme("fail at sem_cerate\r\n");
+	}
+
+	r = sem_create(&request_sem_pt);
+	if (0 != r) {
+		logme("fail at sem_create\r\n");
+	}
+
+	r = mutex_create(&checkUnpluged_mutex_pt);
+	if (0 != r) {
+		logme("fail at mutex_create\r\n");
+	}
+
+	smartbelt_gpio_init();
+	smartbelt_i2c_init();
+}
+
+void smartbelt_sendMessageToTransfer(uint8_t *packet) {
+	msgq_send(msgTransfer_msgq_pt, packet);
+}
+

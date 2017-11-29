@@ -1,0 +1,50 @@
+/*
+ * lib_motor_controller.h
+ *
+ *  Created on: 2015. 7. 8.
+ *      Author: minsu
+ */
+
+#ifndef APPLICATION_SORA_LIB_MOTOR_CONTROLLER_ITF_LIB_MOTOR_CONTROLLER_H_
+#define APPLICATION_SORA_LIB_MOTOR_CONTROLLER_ITF_LIB_MOTOR_CONTROLLER_H_
+
+#include "../../../../kernel/porting/lib_sam4e/sam/drivers/pio/pio.h"
+
+#define CW	0
+#define CCW	1
+
+#define STOP	0
+#define START	1
+
+#define Degrees_Per_Revolution 360
+
+#define a	0.158365 //m
+#define b	0.140418 //m
+
+#define R	20.4990 //cm
+#define rr	5 //cm
+#define PI	3.1415
+
+typedef struct {
+	float motor_ref_speed;
+	float motor_power;
+	float motor_speed;
+	uint8_t motor_dir;
+
+	float error;
+	float I_error;
+	float max_speed;
+
+	uint8_t start_accumalte;
+	float accumulated_time;
+}MotorControlData;
+
+extern void dir_set(uint8_t direction, Pin* dir);
+extern void motor_drive(uint8_t direction, Pin* dir, int portnum,int power);
+extern void instant_speed_get(float* interval, int pre_enc, int enc, float* speed);
+extern void calculate_ref_speeds(float vx, float vy, float w,MotorControlData* MCD,uint8_t array_length);
+extern void speed2power(MotorControlData* MCD, uint8_t array_length);
+
+void calcuate_angle(unsigned int* cur_encoder_val, unsigned int* pre_encoder_val, float* angle);
+
+#endif /* APPLICATION_SORA_LIB_MOTOR_CONTROLLER_ITF_LIB_MOTOR_CONTROLLER_H_ */

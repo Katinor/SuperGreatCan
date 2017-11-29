@@ -1,0 +1,305 @@
+/*
+ * lib_sora_motor_drive.c
+ *
+ *  Created on: 2015. 7. 22.
+ *      Author: Administrator
+ */
+
+// standard c library include
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <sam4e.h>
+
+// ubinos library include
+#include "itf_ubinos/itf/bsp.h"
+#include "itf_ubinos/itf/ubinos.h"
+
+// chipset driver include
+#include "ioport.h"
+#include "pio/pio.h"
+
+// new estk driver include
+#include "lib_new_estk_api/itf/new_estk_led.h"
+#include "lib_new_estk_api/itf/new_estk_glcd.h"
+#include "lib_motor_driver/itf/lib_motor_driver.h"
+#include "lib_ubi_pio/itf/lib_ubi_pio.h"
+
+// custom library header file include
+#include "../../lib_ata5279c/itf/lib_ata5279c.h"
+#include "../../lib_sora_support/itf/lib_sora_ext_sw.h"
+#include "../../lib_motor_controller/itf/lib_motor_controller.h"
+#include "../../lib_motor_controller/itf/lib_speed_configuration.h"
+
+#define Kp_0 0.33062
+#define Kp_1 0.30017
+#define Kp_2 0.30017
+#define Kp_3 0.33062
+
+#define Ki_0 0.3752
+#define Ki_1 0.3535
+#define Ki_2 0.3535
+#define Ki_3 0.3752
+
+#define Max_Speed_Motor0 5.753
+#define Max_Speed_Motor1 5.491
+#define Max_Speed_Motor2 5.484
+#define Max_Speed_Motor3 5.484
+
+#define MAX_POWER 1024
+#define MIN_POWER -1024
+
+#define LOW_W_SPEED		4
+#define HIGH_W_SPEED	12
+
+#define MAXIMUM_INTEGRATION 10
+
+#define MAX_MOTOR_NUMBER 4
+
+int Kp[]={Kp_0, Kp_1, Kp_2, Kp_3};
+int Ki[]={Ki_0, Ki_1, Ki_2, Ki_3};
+
+#define p_dir0	{PIO_PC23,PIOC,ID_PIOC,PIO_OUTPUT_0,PIO_DEFAULT}
+#define p_dir1	{PIO_PC24,PIOC,ID_PIOC,PIO_OUTPUT_0,PIO_DEFAULT}
+#define p_dir2	{PIO_PC25,PIOC,ID_PIOC,PIO_OUTPUT_0,PIO_DEFAULT}
+#define p_dir3	{PIO_PC26,PIOC,ID_PIOC,PIO_OUTPUT_0,PIO_DEFAULT}
+
+Pin p_dir[]={p_dir0, p_dir1, p_dir2, p_dir3};
+
+#define MCD0 {0,0,0,0,0,0,Max_Speed_Motor0,STOP,0}
+#define MCD1 {0,0,0,0,0,0,Max_Speed_Motor1,STOP,0}
+#define MCD2 {0,0,0,0,0,0,Max_Speed_Motor2,STOP,0}
+#define MCD3 {0,0,0,0,0,0,Max_Speed_Motor3,STOP,0}
+unsigned int pre_encoder_value[]={0,0,0,0};
+unsigned int cur_encoder_value[]={0,0,0,0};
+MotorControlData MotorControl_Data[]={MCD0, MCD1, MCD2, MCD3};
+
+#define MSGSIZE		10
+#define MSGCOUNT	10
+static msgq_pt sd_msgq = NULL;
+static sem_pt sd_sem = NULL;
+
+#define SET 1
+#define CLEAR 0
+uint8_t state_is_changed	=	SET;
+uint8_t rotation_is_started	=	CLEAR;
+uint8_t rotation_check		=	CLEAR;
+float Interval =0.04;
+float vx=0;
+float vy=0;
+float angle=0;
+float w=0;
+
+float accumulated_angle[4];
+uint8_t angle_check=0;
+
+void Initiate_new_driving(void);
+void Continue_previous_driving(void);
+void angle_calculation(unsigned int* cur_encoder_val, unsigned int* pre_encoder_val, float* accumul_angle, float angle);
+
+static void Driving(void * arg);
+static void msg_recv(void* arg);
+
+void sora_motor_drive_init(void){
+	int r;
+//messageque create
+	r = msgq_create(&sd_msgq,MSGSIZE, MSGCOUNT);
+	if (0 != r) {
+		logme("fail at msgq_create\r\n");
+	}
+//semaphor create
+	r = sem_create(&sd_sem);
+	if (0 != r) {
+		logme("fail at sem_create\r\n");
+	}
+//task create
+	r = task_create(NULL, Driving, NULL, task_getmiddlepriority(), 256, "Driving");
+	if (0 != r) {
+		logme("fail at task_create\r\n");
+	}
+
+	r = task_create(NULL, msg_recv, NULL, task_getmiddlepriority(), 256, "Receiving");
+	if (0 != r) {
+		logme("fail at task_create\r\n");
+	}
+
+	for(int i=0;i<4;i++){
+			pio_configure(p_dir[i].pio,p_dir[i].type,p_dir[i].mask,p_dir[i].attribute);
+	}
+}
+
+void motor_set_speed(uint8_t cmd, int vx, int vy, int angle, int w){
+
+	int r;
+
+	unsigned char send_buf[MSGSIZE];
+	uint8_t buflength_send;
+
+	SpeedData sdsend={cmd, vx, vy, angle, w};
+
+	buflength_send = sizeof(send_buf)/sizeof(unsigned char);
+	SpeedData_Integration(&sdsend,send_buf,buflength_send);
+
+	r=msgq_send(sd_msgq,send_buf);
+	if(r != 0){
+		logme("error occurred: at msgq send");
+	}
+}
+
+static void msg_recv(void* arg){
+
+	int r;
+
+	unsigned char recv_buf[MSGSIZE];
+	SpeedData sdrecv;
+	uint8_t buflength_recv;
+
+	for(;;){
+		r=sem_take(sd_sem);
+		if(r!=0){
+			logme("error occurred, sem take");
+		}
+		r=msgq_receive(sd_msgq,recv_buf);
+		if(r!=0){
+			logme("error occurred");
+		}
+
+		buflength_recv=sizeof(recv_buf)/sizeof(unsigned char);
+		SpeedData_parsing(&sdrecv,recv_buf,buflength_recv);
+
+		switch(sdrecv.cmd){
+		case LINEAR_MOTION:
+			vx=(float)sdrecv.vx;
+			vy=(float)sdrecv.vy;
+			state_is_changed=SET;
+			break;
+		case ROTATING_MOTION:
+			angle=((float)(sdrecv.angle)*(float)PI)/(float)180;
+			w=(float)sdrecv.w;
+
+			if(angle<0){
+				angle=-angle;
+				w=-w;
+			}
+
+			rotation_is_started=SET;
+			state_is_changed=SET;
+			break;
+		}
+	}
+}
+
+static void Driving(void * arg) {
+
+	uint8_t in;
+	uint8_t i=0;
+	uint8_t r=0;
+	unsigned int Time = 0;
+
+	hrtick_t sTick, eTick, dTick;
+	ubik_hrtick_enable(0);
+
+	while(1){
+		ubik_hrtick_gettick(&sTick);
+
+		in = state_is_changed;
+
+		switch(in){
+			case SET:
+				Initiate_new_driving();
+				break;
+			case CLEAR:
+				Continue_previous_driving();
+				break;
+		}
+
+		for(i=0;i<MAX_MOTOR_NUMBER;i++){
+
+			motor_drive(MotorControl_Data[i].motor_dir, p_dir+i, i, (int)MotorControl_Data[i].motor_power);
+
+		}
+
+		task_sleep(40);
+
+		if(in){
+			r=	sem_give(sd_sem);
+			if(r != 0){
+				logme("error occurred: at sem_give\r\n");
+			}
+		}
+		ubik_hrtick_gettick(&eTick);
+		ubik_hrtick_gettickdiff(&sTick,&eTick,&dTick);
+		ubik_hrtick_hrticktotimeus(&dTick,&Time);
+		Interval=(float)Time/1000000;
+
+	}
+}
+
+void Initiate_new_driving(void){
+	int i=0;
+	for(i=0;i<MAX_MOTOR_NUMBER;i++){
+		MotorControl_Data[i].error=0; MotorControl_Data[i].I_error=0;
+		encoder_reset(i);
+		pre_encoder_value[i]=0;cur_encoder_value[i]=0;
+	}
+	calculate_ref_speeds(vx,vy,w,&MotorControl_Data,MAX_MOTOR_NUMBER);
+	speed2power(&MotorControl_Data,MAX_MOTOR_NUMBER);
+	state_is_changed=CLEAR;
+}
+
+void Continue_previous_driving(void){
+	int i=0;
+
+	for(i=0;i<MAX_MOTOR_NUMBER;i++){
+		cur_encoder_value[i]=encoder_get(i);
+	}
+
+	switch(rotation_is_started){
+	case SET:
+		angle_calculation(cur_encoder_value, pre_encoder_value, accumulated_angle, angle);
+		break;
+	case CLEAR:
+		break;
+	}
+
+
+	for(i=0;i<MAX_MOTOR_NUMBER;i++){
+		instant_speed_get(&Interval,  pre_encoder_value[i], cur_encoder_value[i],&(MotorControl_Data[i].motor_speed));
+		pre_encoder_value[i]=cur_encoder_value[i];
+		MotorControl_Data[i].error=MotorControl_Data[i].motor_ref_speed-MotorControl_Data[i].motor_speed;
+		MotorControl_Data[i].I_error+=MotorControl_Data[i].error;
+		if(MotorControl_Data[i].I_error>MAXIMUM_INTEGRATION){
+			MotorControl_Data[i].I_error=(float)MAXIMUM_INTEGRATION;
+		}
+		else if(MotorControl_Data[i].I_error<MAXIMUM_INTEGRATION*(-1)){
+			MotorControl_Data[i].I_error=(float)MAXIMUM_INTEGRATION*(-1);
+		}
+	}
+	for(i=0;i<MAX_MOTOR_NUMBER;i++){
+		MotorControl_Data[i].motor_power=(float)(MotorControl_Data[i].motor_power+(((float)Kp[i])*MotorControl_Data[i].error+((float)Ki[i])*MotorControl_Data[i].I_error));
+
+		if(MotorControl_Data[i].motor_power<MIN_POWER){
+			MotorControl_Data[i].motor_power=(float)MIN_POWER;
+		}
+		if(MotorControl_Data[i].motor_power>MAX_POWER){
+			MotorControl_Data[i].motor_power=(float)MAX_POWER;
+		}
+	}
+}
+
+void angle_calculation(unsigned int* cur_encoder_val, unsigned int* pre_encoder_val, float* accumul_angle, float angle){
+	uint8_t i;
+
+	calcuate_angle(cur_encoder_val, pre_encoder_val, accumul_angle);
+
+	for(i=0;i<MAX_MOTOR_NUMBER;i++){
+		if(((angle-((float)PI/(float)90))<(*(accumul_angle+i)))&&((angle+(float)PI/(float)90)>(*(accumul_angle+i)))){
+			angle_check+=1;
+		}
+	}
+
+	if(angle_check>2){
+		rotation_is_started=CLEAR;
+		rotation_check=SET;
+	}
+}

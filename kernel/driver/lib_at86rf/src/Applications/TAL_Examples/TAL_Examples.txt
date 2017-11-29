@@ -1,0 +1,19 @@
+/**
+ * @file TAL_Examples.txt
+ *
+ * @brief  Overview of the TAL Examples
+ *
+ * $Id: TAL_Examples.txt,v 1.1 2010-08-04 01:42:23 slb Exp $
+ *
+ * @author    Atmel Corporation: http://www.atmel.com
+ * @author    Support email: avr@atmel.com
+ */
+/*
+ * Copyright (c) 2008, Atmel Corporation All rights reserved.
+ *
+ * Licensed under Atmel's Limited License Agreement --> EULA.txt
+ */
+
+For a detailed description of all TAL Examples please see
+Doc/User_Guide/AVR2025_User_Guide.pdf
+section 8.2.2 "TAL Examples".

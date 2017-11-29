@@ -1,0 +1,1319 @@
+Archive member included because of file (symbol)
+
+./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+                              ./../bsp_sam4sek2/out/cstartup.o (main)
+./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+                              ./../bsp_sam4sek2/out/cstartup.o (lowlevel_init)
+./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                              ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o) (bsp_abortsystem)
+./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+                              ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o) (dtty_puts)
+./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+                              ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o) (bsp_comp_init)
+./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty__nosocheck.o)
+                              ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o) (dtty_putc_nosocheck)
+./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(ubiclib.o)
+                              ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o) (ubiclib_comp_init)
+./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+                              ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o) (ubiclib_heap_comp_init)
+./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+                              ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o) (snprintf)
+./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+                              ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(ubiclib.o) (logm_setlevel)
+./../lib_ubiclib_port_arm/out/libgccarmelf__lib_ubiclib_port_arm.a(ubiclib_port.o)
+                              ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(ubiclib.o) (ubiclib_port_comp_init)
+././out/libgccarmelf__exe_custom.a(usrmain.o)
+                              ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o) (usrmain)
+./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+                              ././out/libgccarmelf__exe_custom.a(usrmain.o) (at91_getnvm)
+./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+                              ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o) (bsp_busywait)
+./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+                              ././out/libgccarmelf__exe_custom.a(usrmain.o) (flash_create)
+./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                              ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o) (flash_port_sam7x256ek_create)
+./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+                              ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o) (FLASHD_Initialize)
+./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+                              ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o) (EFC_DisableFrdyIt)
+./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(mem.o)
+                              ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o) (memcpy)
+./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(uitoa.o)
+                              ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o) (htobui)
+
+Allocating common symbols
+Common symbol       size              file
+
+srcbuf              0x4000            ././out/libgccarmelf__exe_custom.a(usrmain.o)
+_ubiclib_defaultheap
+                    0x78              ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+
+Discarded input sections
+
+ .text          0x00000000        0x0 ./../bsp_sam4sek2/out/cstartup.o
+ .data          0x00000000        0x0 ./../bsp_sam4sek2/out/cstartup.o
+ .bss           0x00000000        0x0 ./../bsp_sam4sek2/out/cstartup.o
+ .text          0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+ .data          0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+ .bss           0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+ .text          0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+ .data          0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+ .bss           0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+ .text          0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+ .data          0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+ .bss           0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+ .text.arm_get_cp15_nosocheck
+                0x00000000       0x14 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+ .text.arm_set_cp15_nosocheck
+                0x00000000       0x10 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+ .text.arm_get_xpsr_nosocheck
+                0x00000000       0x14 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+ .text.arm_get_apsr_nosocheck
+                0x00000000       0x14 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+ .text.arm_get_ipsr_nosocheck
+                0x00000000       0x14 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+ .text.arm_get_epsr_nosocheck
+                0x00000000       0x14 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+ .text._bsp_initfirsttask
+                0x00000000        0x4 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+ .text          0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+ .data          0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+ .bss           0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+ .text.dtty_enable
+                0x00000000        0x8 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+ .text.dtty_disable
+                0x00000000        0x8 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+ .text.dtty_getc
+                0x00000000       0x60 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+ .text.dtty_gets
+                0x00000000       0x98 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+ .text.dtty_kbhit
+                0x00000000       0x1c ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+ .text.dtty_setecho
+                0x00000000       0x18 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+ .text          0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+ .data          0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+ .bss           0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+ .data._svc_stack
+                0x00000000        0x4 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+ .text.bsp_timemstobwc
+                0x00000000       0x14 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+ .text.bsp_bwctotimems
+                0x00000000       0x18 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+ .text.bsp_getstacksize
+                0x00000000       0x40 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+ .text.bsp_getmaxstackusage
+                0x00000000       0x1c ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+ .rodata        0x00000000      0x3b0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+ .text.bsp_sprintmemmap
+                0x00000000      0x4e8 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+ .text.bsp_printmemmap
+                0x00000000      0x1fc ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+ .text          0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty__nosocheck.o)
+ .data          0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty__nosocheck.o)
+ .bss           0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty__nosocheck.o)
+ .text          0x00000000        0x0 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(ubiclib.o)
+ .data          0x00000000        0x0 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(ubiclib.o)
+ .bss           0x00000000        0x0 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(ubiclib.o)
+ .text          0x00000000        0x0 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .data          0x00000000        0x0 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .bss           0x00000000        0x0 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.mallocn  0x00000000       0x28 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.mallocr  0x00000000       0x28 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_create
+                0x00000000       0xd0 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_delete
+                0x00000000      0x128 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_malloc
+                0x00000000       0x3c ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_mallocn
+                0x00000000       0x20 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_mallocr
+                0x00000000       0x20 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_checkboundary
+                0x00000000       0x80 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_checkboundaryall
+                0x00000000      0x270 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_getsize
+                0x00000000       0xe0 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_getheapsize
+                0x00000000       0xb0 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_getallocsize
+                0x00000000       0xb4 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_getallocsize_ext
+                0x00000000       0xa8 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_getallocsizemax
+                0x00000000       0xb0 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_getallocsizemax_ext
+                0x00000000       0xa8 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_getalloccount
+                0x00000000       0xb4 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_getalloccount_ext
+                0x00000000       0xa8 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_getalloccountmax
+                0x00000000       0xb0 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_getalloccountmax_ext
+                0x00000000       0xa8 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_getblockoverhead
+                0x00000000       0xac ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_sprintheapinfo
+                0x00000000      0x598 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_printheapinfo
+                0x00000000      0x304 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text          0x00000000        0x0 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+ .data          0x00000000        0x0 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+ .bss           0x00000000        0x0 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+ .text.sprintf  0x00000000       0x38 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+ .text.snprintf
+                0x00000000       0x38 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+ .text.gets     0x00000000       0x2c ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+ .text          0x00000000        0x0 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+ .data          0x00000000        0x0 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+ .bss           0x00000000        0x0 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+ .text.logm_getlevel
+                0x00000000       0x28 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+ .text          0x00000000        0x0 ./../lib_ubiclib_port_arm/out/libgccarmelf__lib_ubiclib_port_arm.a(ubiclib_port.o)
+ .data          0x00000000        0x0 ./../lib_ubiclib_port_arm/out/libgccarmelf__lib_ubiclib_port_arm.a(ubiclib_port.o)
+ .bss           0x00000000        0x0 ./../lib_ubiclib_port_arm/out/libgccarmelf__lib_ubiclib_port_arm.a(ubiclib_port.o)
+ .text          0x00000000        0x0 ././out/libgccarmelf__exe_custom.a(usrmain.o)
+ .data          0x00000000        0x0 ././out/libgccarmelf__exe_custom.a(usrmain.o)
+ .bss           0x00000000        0x0 ././out/libgccarmelf__exe_custom.a(usrmain.o)
+ .data.srcbufsize
+                0x00000000        0x4 ././out/libgccarmelf__exe_custom.a(usrmain.o)
+ .text          0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+ .data          0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+ .bss           0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+ .text.bsp_getcpuidsize
+                0x00000000        0x8 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+ .text.bsp_getsocheckmargin
+                0x00000000        0x8 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+ .text.bsp_getcpuclockfreq
+                0x00000000       0x1c ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+ .text.bsp_getcpuclockfreqk
+                0x00000000       0xd4 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+ .text.bsp_getmckfreq
+                0x00000000       0x1c ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+ .text.bsp_getmckfreqk
+                0x00000000       0x1c ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+ .text          0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+ .data          0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+ .bss           0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+ .text.bsp_enableintr
+                0x00000000        0x8 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+ .text.bsp_disableintr
+                0x00000000        0x8 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+ .text.bsp_busywaitms
+                0x00000000       0x30 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+ .text.arm_get_xpsr
+                0x00000000       0x14 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+ .text.arm_get_apsr
+                0x00000000       0x14 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+ .text.arm_get_ipsr
+                0x00000000       0x14 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+ .text.arm_get_epsr
+                0x00000000       0x14 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+ .text.arm_set_pendsv
+                0x00000000       0x14 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+ .text.arm_get_pendsv
+                0x00000000       0x14 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+ .text.arm_set_svcpend
+                0x00000000       0x14 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+ .text.arm_get_svcpend
+                0x00000000       0x14 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+ .text          0x00000000        0x0 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .data          0x00000000        0x0 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .bss           0x00000000        0x0 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .text.flash_delete
+                0x00000000       0x6c ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .text.flash_writebyte
+                0x00000000       0x58 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .text.flash_writesector
+                0x00000000       0x64 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .text.flash_readsector
+                0x00000000       0x60 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .text.flash_erase
+                0x00000000       0x50 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .text.flash_eraseall
+                0x00000000       0x4c ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .text.flash_getbaddr
+                0x00000000       0x50 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .text.flash_getsize
+                0x00000000       0x50 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .text.flash_getsectorcount
+                0x00000000       0x50 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .text.flash_getsectorbaddr
+                0x00000000       0x54 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .text.flash_getsectorsize
+                0x00000000       0x54 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .text.flash_getsectorsizemax
+                0x00000000       0x50 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .text.flash_getaddr
+                0x00000000       0x58 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .text.flash_getsector
+                0x00000000       0x58 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .text.flash_getchipid
+                0x00000000       0x54 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .text.flash_getchipidsize
+                0x00000000       0x4c ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .text          0x00000000        0x0 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+ .data          0x00000000        0x0 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+ .bss           0x00000000        0x0 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+ .text          0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+ .data          0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+ .bss           0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+ .text.ComputeLockRange
+                0x00000000       0xc8 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+ .text.FLASHD_EraseSector
+                0x00000000       0x44 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+ .text.FLASHD_ErasePages
+                0x00000000       0xd4 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+ .text.FLASHD_Lock
+                0x00000000       0xb4 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+ .text.FLASHD_Unlock
+                0x00000000       0xb4 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+ .text.FLASHD_IsLocked
+                0x00000000      0x10c ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+ .text.FLASHD_IsGPNVMSet
+                0x00000000       0x50 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+ .text.FLASHD_SetGPNVM
+                0x00000000       0x48 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+ .text.FLASHD_ClearGPNVM
+                0x00000000       0x48 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+ .ramfunc       0x00000000       0xa0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+ .bss.dwFarg.7473
+                0x00000000        0x4 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+ .text          0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+ .data          0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+ .bss           0x00000000        0x0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+ .text.EFC_EnableFrdyIt
+                0x00000000       0x28 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+ .text.EFC_SetWaitState
+                0x00000000       0x3c ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+ .text.EFC_GetStatus
+                0x00000000       0x10 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+ .text.EFC_GetResult
+                0x00000000       0x10 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+ .text.EFC_SetFlashAccessMode
+                0x00000000       0x28 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+ .text          0x00000000        0x0 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(mem.o)
+ .data          0x00000000        0x0 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(mem.o)
+ .bss           0x00000000        0x0 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(mem.o)
+ .text.memset   0x00000000       0x30 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(mem.o)
+ .text.memcmp   0x00000000       0x70 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(mem.o)
+ .text.memmove  0x00000000       0x6c ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(mem.o)
+ .text.memset0  0x00000000       0x7c ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(mem.o)
+ .text          0x00000000        0x0 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(uitoa.o)
+ .data          0x00000000        0x0 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(uitoa.o)
+ .bss           0x00000000        0x0 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(uitoa.o)
+ .text.uitoa    0x00000000       0xe8 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(uitoa.o)
+ .text.uitoah   0x00000000       0xf0 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(uitoa.o)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+int_sram         0x20000000         0x00028000         w !xr
+int_flash        0x00400000         0x00100000         xr
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+START GROUP
+LOAD ./../bsp_sam4sek2/out/cstartup.o
+LOAD ././out/libgccarmelf__exe_custom.a
+LOAD ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a
+LOAD ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a
+LOAD ./../lib_ubiclib_port_arm/out/libgccarmelf__lib_ubiclib_port_arm.a
+LOAD ./../lib_flash/out/libgccarmelf__lib_flash.a
+LOAD ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a
+END GROUP
+                0x20000000                __int_sram_start__ = 0x20000000
+                0x20027fff                __int_sram_end__ = 0x20027fff
+                0x00400000                __int_flash_start__ = 0x400000
+                0x004fffff                __int_flash_end__ = 0x4fffff
+                0x20027fff                __stack_top_temp__ = __int_sram_end__
+                0x20000000                __stack_limit_temp__ = __int_sram_start__
+                0x20027fff                __stack_top__ = __int_sram_end__
+                0x20000000                __exc_vectors_dst_start__ = __exc_vectors_start__
+                0x20000000                __exc_vectors_src_start__ = LOADADDR (.exc_vectors)
+                0x200000d0                __exc_vectors_src_end__ = (LOADADDR (.exc_vectors) + SIZEOF (.exc_vectors))
+                0x200061b8                __ram_section_dst_start__ = __data_start__
+                0x200061b8                __ram_section_src_start__ = LOADADDR (.data)
+                0x200061ec                __ram_section_src_end__ = (LOADADDR (.data) + SIZEOF (.data))
+
+.exc_vectors    0x20000000       0xd0
+                0x20000000                . = ALIGN (0x4)
+                0x20000000                __exc_vectors_start__ = .
+ *(.exc_vectors*)
+ .exc_vectors   0x20000000       0xd0 ./../bsp_sam4sek2/out/cstartup.o
+                0x20000000                _exception_table
+                0x200000d0                . = ALIGN (0x4)
+                0x200000d0                __exc_vectors_end__ = .
+
+.startup        0x200000d0       0xd0
+                0x200000d0                . = ALIGN (0x4)
+                0x200000d0                __startup_start__ = .
+ *(.startup*)
+ .startup       0x200000d0       0xd0 ./../bsp_sam4sek2/out/cstartup.o
+                0x200000d0                _processor_reset
+                0x200001a0                . = ALIGN (0x4)
+                0x200001a0                __startup_end__ = .
+
+.text           0x200001a0     0x4298
+                0x200001a0                . = ALIGN (0x4)
+                0x200001a0                __text_start__ = .
+ *(.text*)
+ .text.main     0x200001a0      0x124 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+                0x200001a0                main
+ .text.lowlevel_init
+                0x200002c4      0x208 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+                0x200002c4                lowlevel_init
+ .text.bsp_abortsystem
+                0x200004cc       0x1c ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                0x200004cc                bsp_abortsystem
+ .text.bsp_exception_handler
+                0x200004e8      0x3bc ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                0x200004e8                bsp_exception_handler
+ .text.bsp_tickisr
+                0x200008a4       0x1c ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                0x200008a4                bsp_tickisr
+ .text.bsp_swisr
+                0x200008c0       0x24 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                0x200008c0                bsp_swisr
+ .text.arm_irq_handler
+                0x200008e4        0xc ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                0x200008e4                arm_irq_handler
+ .text.arm_swi_handler
+                0x200008f0       0x20 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                0x200008f0                arm_swi_handler
+ .text.arm_psv_handler
+                0x20000910        0xc ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                0x20000910                arm_psv_handler
+ .text.mutex_create
+                0x2000091c        0xc ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                0x2000091c                mutex_create
+ .text.mutex_delete
+                0x20000928        0xc ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                0x20000928                mutex_delete
+ .text.mutex_lock
+                0x20000934        0xc ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                0x20000934                mutex_lock
+ .text.mutex_unlock
+                0x20000940        0xc ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                0x20000940                mutex_unlock
+ .text.ubik_isrt
+                0x2000094c        0x8 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                0x2000094c                ubik_isrt
+ .text.dtty_init
+                0x20000954       0x90 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+                0x20000954                dtty_init
+ .text.dtty_putc
+                0x200009e4       0x28 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+                0x200009e4                dtty_putc
+ .text.dtty_puts
+                0x20000a0c       0x60 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+                0x20000a0c                dtty_puts
+ .text.bsp_comp_init
+                0x20000a6c       0x28 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+                0x20000a6c                bsp_comp_init
+ .text.bsp_getbusywaitcountperms
+                0x20000a94        0x8 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+                0x20000a94                bsp_getbusywaitcountperms
+ .text.dtty_putc_nosocheck
+                0x20000a9c       0x28 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty__nosocheck.o)
+                0x20000a9c                dtty_putc_nosocheck
+ .text.dtty_puts_nosocheck
+                0x20000ac4       0x60 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty__nosocheck.o)
+                0x20000ac4                dtty_puts_nosocheck
+ .text.ubiclib_comp_init
+                0x20000b24       0x28 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(ubiclib.o)
+                0x20000b24                ubiclib_comp_init
+ .text.ubiclib_comp_init_reent
+                0x20000b4c       0x1c ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(ubiclib.o)
+                0x20000b4c                ubiclib_comp_init_reent
+ .text.ubiclib_heap_comp_init
+                0x20000b68       0x70 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+                0x20000b68                ubiclib_heap_comp_init
+ .text.ubiclib_heap_comp_init_reent
+                0x20000bd8       0xac ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+                0x20000bd8                ubiclib_heap_comp_init_reent
+ .text.malloc   0x20000c84       0x48 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+                0x20000c84                malloc
+ .text.free     0x20000ccc       0x20 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+                0x20000ccc                free
+ .text.heap_free
+                0x20000cec       0x20 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+                0x20000cec                heap_free
+ .text.heap_blist_init
+                0x20000d0c       0x24 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_blist_removenext
+                0x20000d30       0x6c ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_blist_insertnext
+                0x20000d9c       0x70 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_blist_inserttail
+                0x20000e0c       0x50 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_blist_insertsizeorder
+                0x20000e5c       0xd4 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_init
+                0x20000f30       0xc8 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_freeblock_bestfits
+                0x20000ff8      0x26c ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_mergeblock_bestfits
+                0x20001264      0x1ec ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.heap_allocblock_bestfits
+                0x20001450      0x49c ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .text.vfprintfn_putchar
+                0x200018ec       0x5c ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+ .text.vfprintfn_putcharn
+                0x20001948       0x94 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+ .text.vfprintfn_putunsignedinteger
+                0x200019dc      0x120 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+ .text.vfprintfn_putinteger
+                0x20001afc       0x88 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+ .text.vfprintfn_putstring
+                0x20001b84       0x8c ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+ .text.vfprintfn_puthexadecimal
+                0x20001c10      0x124 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+ .text.vfprintfn_putoctal
+                0x20001d34       0xf8 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+ .text.vfprintfn_isdigit
+                0x20001e2c       0x24 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+ .text.vfprintfn_parsedigits
+                0x20001e50       0x78 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+ .text.vfprintfn
+                0x20001ec8      0x440 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+                0x20001ec8                vfprintfn
+ .text.printf   0x20002308       0x34 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+                0x20002308                printf
+ .text.puts     0x2000233c       0x40 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+                0x2000233c                puts
+ .text.putchar  0x2000237c       0x2c ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+                0x2000237c                putchar
+ .text.logm_setlevel
+                0x200023a8       0x64 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+                0x200023a8                logm_setlevel
+ .text.logm_printf
+                0x2000240c       0xc8 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+                0x2000240c                logm_printf
+ .text.ubiclib_port_comp_init
+                0x200024d4        0x4 ./../lib_ubiclib_port_arm/out/libgccarmelf__lib_ubiclib_port_arm.a(ubiclib_port.o)
+                0x200024d4                ubiclib_port_comp_init
+ .text.ubiclib_port_comp_init_reent
+                0x200024d8        0x4 ./../lib_ubiclib_port_arm/out/libgccarmelf__lib_ubiclib_port_arm.a(ubiclib_port.o)
+                0x200024d8                ubiclib_port_comp_init_reent
+ .text.usrmain  0x200024dc       0xa8 ././out/libgccarmelf__exe_custom.a(usrmain.o)
+                0x200024dc                usrmain
+ .text.flashaction
+                0x20002584      0x448 ././out/libgccarmelf__exe_custom.a(usrmain.o)
+                0x20002584                flashaction
+ .text.bsp_getcpuid
+                0x200029cc       0x5c ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+                0x200029cc                bsp_getcpuid
+ .text.at91_getnvm
+                0x20002a28      0x120 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+                0x20002a28                at91_getnvm
+ .text.at91_setnvm
+                0x20002b48      0x13c ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+                0x20002b48                at91_setnvm
+ .text.bsp_busywait
+                0x20002c84       0x10 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+                0x20002c84                bsp_busywait
+ .text.arm_get_cp15
+                0x20002c94       0x14 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+                0x20002c94                arm_get_cp15
+ .text.arm_set_cp15
+                0x20002ca8       0x10 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+                0x20002ca8                arm_set_cp15
+ .text.flash_create
+                0x20002cb8      0x104 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+                0x20002cb8                flash_create
+ .text.flash_write
+                0x20002dbc       0x5c ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+                0x20002dbc                flash_write
+ .text.flash_port_sam7x256ek_create
+                0x20002e18      0x2b0 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                0x20002e18                flash_port_sam7x256ek_create
+ .text.flash_port_sam7x256ek_delete
+                0x200030c8       0xf0 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                0x200030c8                flash_port_sam7x256ek_delete
+ .text.flash_port_sam7x256ek_writebyte
+                0x200031b8       0x50 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                0x200031b8                flash_port_sam7x256ek_writebyte
+ .text.flash_port_sam7x256ek_writesector
+                0x20003208      0x3b8 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                0x20003208                flash_port_sam7x256ek_writesector
+ .text.flash_port_sam7x256ek_readsector
+                0x200035c0      0x19c ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                0x200035c0                flash_port_sam7x256ek_readsector
+ .text.flash_port_sam7x256ek_write
+                0x2000375c      0x17c ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                0x2000375c                flash_port_sam7x256ek_write
+ .text.flash_port_sam7x256ek_erase
+                0x200038d8       0xb4 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                0x200038d8                flash_port_sam7x256ek_erase
+ .text.flash_port_sam7x256ek_eraseall
+                0x2000398c      0x1b4 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                0x2000398c                flash_port_sam7x256ek_eraseall
+ .text.flash_port_sam7x256ek_getbaddr
+                0x20003b40       0x78 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                0x20003b40                flash_port_sam7x256ek_getbaddr
+ .text.flash_port_sam7x256ek_getsize
+                0x20003bb8       0x78 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                0x20003bb8                flash_port_sam7x256ek_getsize
+ .text.flash_port_sam7x256ek_getsectorcount
+                0x20003c30       0x78 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                0x20003c30                flash_port_sam7x256ek_getsectorcount
+ .text.flash_port_sam7x256ek_getsectorbaddr
+                0x20003ca8       0xa4 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                0x20003ca8                flash_port_sam7x256ek_getsectorbaddr
+ .text.flash_port_sam7x256ek_getsectorsize
+                0x20003d4c       0x9c ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                0x20003d4c                flash_port_sam7x256ek_getsectorsize
+ .text.flash_port_sam7x256ek_getsectorsizemax
+                0x20003de8       0x78 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                0x20003de8                flash_port_sam7x256ek_getsectorsizemax
+ .text.flash_port_sam7x256ek_getaddr
+                0x20003e60       0xe0 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                0x20003e60                flash_port_sam7x256ek_getaddr
+ .text.flash_port_sam7x256ek_getsector
+                0x20003f40       0xc8 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                0x20003f40                flash_port_sam7x256ek_getsector
+ .text.flash_port_sam7x256ek_getchipid
+                0x20004008       0x98 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                0x20004008                flash_port_sam7x256ek_getchipid
+ .text.flash_port_sam7x256ek_getchipidsize
+                0x200040a0       0x50 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                0x200040a0                flash_port_sam7x256ek_getchipidsize
+ .text.FLASHD_Initialize
+                0x200040f0       0x28 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+                0x200040f0                FLASHD_Initialize
+ .text.FLASHD_Erase
+                0x20004118       0x3c ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+                0x20004118                FLASHD_Erase
+ .text.FLASHD_Write
+                0x20004154      0x140 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+                0x20004154                FLASHD_Write
+ .text.EFC_DisableFrdyIt
+                0x20004294       0x24 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+                0x20004294                EFC_DisableFrdyIt
+ .text.EFC_TranslateAddress
+                0x200042b8       0x58 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+                0x200042b8                EFC_TranslateAddress
+ .text.EFC_ComputeAddress
+                0x20004310       0x34 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+                0x20004310                EFC_ComputeAddress
+ .text.EFC_PerformCommand
+                0x20004344       0x88 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+                0x20004344                EFC_PerformCommand
+ .text.memcpy   0x200043cc       0x34 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(mem.o)
+                0x200043cc                memcpy
+ .text.htobui   0x20004400       0x38 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(uitoa.o)
+                0x20004400                htobui
+                0x20004438                . = ALIGN (0x4)
+ *(.glue_7)
+ .glue_7        0x00000000        0x0 linker stubs
+                0x20004438                . = ALIGN (0x4)
+ *(.glue_7t)
+ .glue_7t       0x00000000        0x0 linker stubs
+                0x20004438                . = ALIGN (0x4)
+ *(.vfp11_veneer)
+ .vfp11_veneer  0x00000000        0x0 linker stubs
+                0x20004438                . = ALIGN (0x4)
+ *(.v4_bx)
+ .v4_bx         0x00000000        0x0 linker stubs
+                0x20004438                . = ALIGN (0x4)
+                0x20004438                __text_end__ = .
+
+.iplt           0x20004438        0x0
+ .iplt          0x00000000        0x0 ./../bsp_sam4sek2/out/cstartup.o
+
+.ramfunc        0x20004438       0x10
+ .ramfunc       0x20004438       0x10 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+                0x20004438                EFC_WriteFMR
+
+.rodata         0x20004448     0x1d70
+                0x20004448                . = ALIGN (0x4)
+                0x20004448                __rodata_start__ = .
+ *(.rodata*)
+ .rodata        0x20004448       0xec ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+ .rodata        0x20004534       0xdc ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+ .rodata        0x20004610      0x6c0 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .rodata        0x20004cd0       0x5c ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+ .rodata        0x20004d2c      0x278 ././out/libgccarmelf__exe_custom.a(usrmain.o)
+ .rodata        0x20004fa4      0x2d8 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .rodata        0x2000527c      0xf3c ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                0x200061b8                . = ALIGN (0x4)
+                0x200061b8                __rodata_end__ = .
+
+.rel.dyn        0x200061b8        0x0
+ .rel.iplt      0x00000000        0x0 ./../bsp_sam4sek2/out/cstartup.o
+
+.data           0x200061b8       0x34
+                0x200061b8                . = ALIGN (0x4)
+                0x200061b8                __data_start__ = .
+ *(.data*)
+ .data._ubiclib_logm_levelname
+                0x200061b8       0x1c ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+                0x200061b8                _ubiclib_logm_levelname
+ .data.baddr    0x200061d4        0x4 ././out/libgccarmelf__exe_custom.a(usrmain.o)
+                0x200061d4                baddr
+ .data.srcptr   0x200061d8        0x4 ././out/libgccarmelf__exe_custom.a(usrmain.o)
+                0x200061d8                srcptr
+ .data.dstptr   0x200061dc        0x4 ././out/libgccarmelf__exe_custom.a(usrmain.o)
+                0x200061dc                dstptr
+ .data.size     0x200061e0        0x4 ././out/libgccarmelf__exe_custom.a(usrmain.o)
+                0x200061e0                size
+ .data._dwUseIAP
+                0x200061e4        0x4 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+                0x200061e8                . = ALIGN (0x4)
+                0x200061e8                __data_end_boundary__ = .
+                0x200061ec                . = (. + 0x4)
+ *fill*         0x200061e8        0x4 
+                0x200061ec                __data_end__ = .
+
+.igot.plt       0x200061ec        0x0
+ .igot.plt      0x00000000        0x0 ./../bsp_sam4sek2/out/cstartup.o
+
+.bss            0x200061ec      0x2c4
+                0x200061ec                . = ALIGN (0x4)
+                0x200061ec                __bss_start__ = .
+ *(.bss*)
+ .bss._irq_handler_table
+                0x200061ec       0x90 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                0x200061ec                _irq_handler_table
+ .bss._bsp_intrcount
+                0x2000627c        0x4 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                0x2000627c                _bsp_intrcount
+ .bss._g_bsp_dtty_echo
+                0x20006280        0x4 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+                0x20006280                _g_bsp_dtty_echo
+ .bss._ubiclib_heap
+                0x20006284        0x4 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+                0x20006284                _ubiclib_heap
+ .bss._ubiclib_logm_level
+                0x20006288       0x18 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+                0x20006288                _ubiclib_logm_level
+ .bss.cmd       0x200062a0        0x4 ././out/libgccarmelf__exe_custom.a(usrmain.o)
+                0x200062a0                cmd
+ .bss.flash     0x200062a4        0x4 ././out/libgccarmelf__exe_custom.a(usrmain.o)
+                0x200062a4                flash
+ .bss._pdwPageBuffer
+                0x200062a8      0x200 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+ .bss.IAP_PerformCommand.7322
+                0x200064a8        0x4 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+                0x200064ac                . = ALIGN (0x4)
+                0x200064ac                __bss_end_boundary__ = .
+                0x200064b0                . = (. + 0x4)
+ *fill*         0x200064ac        0x4 
+                0x200064b0                __bss_end__ = .
+
+.common         0x200064b0     0x407c
+                0x200064b0                . = ALIGN (0x4)
+                0x200064b0                __common_start__ = .
+ *(COMMON*)
+ COMMON         0x200064b0       0x78 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+                0x200064b0                _ubiclib_defaultheap
+ COMMON         0x20006528     0x4000 ././out/libgccarmelf__exe_custom.a(usrmain.o)
+                0x20006528                srcbuf
+                0x2000a528                . = ALIGN (0x4)
+                0x2000a528                __common_end_boundary__ = .
+                0x2000a52c                . = (. + 0x4)
+ *fill*         0x2000a528        0x4 
+                0x2000a52c                __common_end__ = .
+                0x2000a52c                . = ALIGN (0x4)
+                0x2000a52c                __end__ = .
+                0x2000a52c                _end = .
+OUTPUT(././out/out.elf elf32-littlearm)
+
+.debug_info     0x00000000     0x7e65
+ .debug_info    0x00000000      0x73b ./../bsp_sam4sek2/out/cstartup.o
+ .debug_info    0x0000073b      0x13f ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+ .debug_info    0x0000087a      0x81b ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+ .debug_info    0x00001095      0x46d ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+ .debug_info    0x00001502      0xba7 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+ .debug_info    0x000020a9      0x5c2 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+ .debug_info    0x0000266b      0x2b8 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty__nosocheck.o)
+ .debug_info    0x00002923       0x94 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(ubiclib.o)
+ .debug_info    0x000029b7      0xffd ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .debug_info    0x000039b4      0x7b4 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+ .debug_info    0x00004168      0x1e9 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+ .debug_info    0x00004351       0x5f ./../lib_ubiclib_port_arm/out/libgccarmelf__lib_ubiclib_port_arm.a(ubiclib_port.o)
+ .debug_info    0x000043b0      0x569 ././out/libgccarmelf__exe_custom.a(usrmain.o)
+ .debug_info    0x00004919      0x6b1 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+ .debug_info    0x00004fca      0x49d ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+ .debug_info    0x00005467      0x936 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .debug_info    0x00005d9d     0x107e ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+ .debug_info    0x00006e1b      0x813 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+ .debug_info    0x0000762e      0x491 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+ .debug_info    0x00007abf      0x234 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(mem.o)
+ .debug_info    0x00007cf3      0x172 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(uitoa.o)
+
+.debug_abbrev   0x00000000     0x18b7
+ .debug_abbrev  0x00000000      0x14e ./../bsp_sam4sek2/out/cstartup.o
+ .debug_abbrev  0x0000014e       0xc7 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+ .debug_abbrev  0x00000215      0x11c ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+ .debug_abbrev  0x00000331      0x1d1 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+ .debug_abbrev  0x00000502      0x139 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+ .debug_abbrev  0x0000063b      0x15b ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+ .debug_abbrev  0x00000796       0xc7 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty__nosocheck.o)
+ .debug_abbrev  0x0000085d       0x6f ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(ubiclib.o)
+ .debug_abbrev  0x000008cc      0x1b8 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .debug_abbrev  0x00000a84      0x189 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+ .debug_abbrev  0x00000c0d      0x100 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+ .debug_abbrev  0x00000d0d       0x39 ./../lib_ubiclib_port_arm/out/libgccarmelf__lib_ubiclib_port_arm.a(ubiclib_port.o)
+ .debug_abbrev  0x00000d46      0x13f ././out/libgccarmelf__exe_custom.a(usrmain.o)
+ .debug_abbrev  0x00000e85      0x18f ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+ .debug_abbrev  0x00001014      0x126 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+ .debug_abbrev  0x0000113a      0x156 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .debug_abbrev  0x00001290      0x1e9 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+ .debug_abbrev  0x00001479      0x181 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+ .debug_abbrev  0x000015fa      0x190 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+ .debug_abbrev  0x0000178a       0x88 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(mem.o)
+ .debug_abbrev  0x00001812       0xa5 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(uitoa.o)
+
+.debug_aranges  0x00000000      0x7f8
+ .debug_aranges
+                0x00000000       0x20 ./../bsp_sam4sek2/out/cstartup.o
+ .debug_aranges
+                0x00000020       0x20 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+ .debug_aranges
+                0x00000040       0x20 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+ .debug_aranges
+                0x00000060       0xb0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+ .debug_aranges
+                0x00000110       0x60 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+ .debug_aranges
+                0x00000170       0x58 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+ .debug_aranges
+                0x000001c8       0x28 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty__nosocheck.o)
+ .debug_aranges
+                0x000001f0       0x28 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(ubiclib.o)
+ .debug_aranges
+                0x00000218      0x138 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .debug_aranges
+                0x00000350       0x98 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+ .debug_aranges
+                0x000003e8       0x30 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+ .debug_aranges
+                0x00000418       0x28 ./../lib_ubiclib_port_arm/out/libgccarmelf__lib_ubiclib_port_arm.a(ubiclib_port.o)
+ .debug_aranges
+                0x00000440       0x28 ././out/libgccarmelf__exe_custom.a(usrmain.o)
+ .debug_aranges
+                0x00000468       0x60 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+ .debug_aranges
+                0x000004c8       0x88 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+ .debug_aranges
+                0x00000550       0xa8 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .debug_aranges
+                0x000005f8       0xa8 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+ .debug_aranges
+                0x000006a0       0x80 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+ .debug_aranges
+                0x00000720       0x68 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+ .debug_aranges
+                0x00000788       0x40 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(mem.o)
+ .debug_aranges
+                0x000007c8       0x30 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(uitoa.o)
+
+.debug_ranges   0x00000000      0x6a8
+ .debug_ranges  0x00000000       0x10 ./../bsp_sam4sek2/out/cstartup.o
+ .debug_ranges  0x00000010       0x10 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+ .debug_ranges  0x00000020       0x10 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+ .debug_ranges  0x00000030       0xa0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+ .debug_ranges  0x000000d0       0x50 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+ .debug_ranges  0x00000120       0x48 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+ .debug_ranges  0x00000168       0x18 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty__nosocheck.o)
+ .debug_ranges  0x00000180       0x18 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(ubiclib.o)
+ .debug_ranges  0x00000198      0x128 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .debug_ranges  0x000002c0       0x88 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+ .debug_ranges  0x00000348       0x20 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+ .debug_ranges  0x00000368       0x18 ./../lib_ubiclib_port_arm/out/libgccarmelf__lib_ubiclib_port_arm.a(ubiclib_port.o)
+ .debug_ranges  0x00000380       0x18 ././out/libgccarmelf__exe_custom.a(usrmain.o)
+ .debug_ranges  0x00000398       0x50 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+ .debug_ranges  0x000003e8       0x78 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+ .debug_ranges  0x00000460       0x98 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .debug_ranges  0x000004f8       0x98 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+ .debug_ranges  0x00000590       0x70 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+ .debug_ranges  0x00000600       0x58 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+ .debug_ranges  0x00000658       0x30 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(mem.o)
+ .debug_ranges  0x00000688       0x20 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(uitoa.o)
+
+.debug_line     0x00000000     0x36a2
+ .debug_line    0x00000000      0x1af ./../bsp_sam4sek2/out/cstartup.o
+ .debug_line    0x000001af      0x120 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+ .debug_line    0x000002cf      0x214 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+ .debug_line    0x000004e3      0x3c1 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+ .debug_line    0x000008a4      0x26e ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+ .debug_line    0x00000b12      0x286 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+ .debug_line    0x00000d98      0x18c ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty__nosocheck.o)
+ .debug_line    0x00000f24       0x76 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(ubiclib.o)
+ .debug_line    0x00000f9a      0x8e3 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .debug_line    0x0000187d      0x3cc ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+ .debug_line    0x00001c49      0x122 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+ .debug_line    0x00001d6b       0x7d ./../lib_ubiclib_port_arm/out/libgccarmelf__lib_ubiclib_port_arm.a(ubiclib_port.o)
+ .debug_line    0x00001de8      0x244 ././out/libgccarmelf__exe_custom.a(usrmain.o)
+ .debug_line    0x0000202c      0x2d7 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+ .debug_line    0x00002303      0x1ee ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+ .debug_line    0x000024f1      0x2f4 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .debug_line    0x000027e5      0x68e ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+ .debug_line    0x00002e73      0x37e ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+ .debug_line    0x000031f1      0x296 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+ .debug_line    0x00003487      0x157 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(mem.o)
+ .debug_line    0x000035de       0xc4 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(uitoa.o)
+
+.debug_str      0x00000000     0x25fa
+ .debug_str     0x00000000      0x3e4 ./../bsp_sam4sek2/out/cstartup.o
+                                0x437 (size before relaxing)
+ .debug_str     0x000003e4      0x12d ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+                                0x204 (size before relaxing)
+ .debug_str     0x00000511      0x2e5 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+                                0x64d (size before relaxing)
+ .debug_str     0x000007f6      0x1f4 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                                0x442 (size before relaxing)
+ .debug_str     0x000009ea      0x3d0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+                                0x6d2 (size before relaxing)
+ .debug_str     0x00000dba      0x23a ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+                                0x453 (size before relaxing)
+ .debug_str     0x00000ff4       0x60 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty__nosocheck.o)
+                                0x2de (size before relaxing)
+ .debug_str     0x00001054       0x59 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(ubiclib.o)
+                                0x170 (size before relaxing)
+ .debug_str     0x000010ad      0x40e ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+                                0x6b4 (size before relaxing)
+ .debug_str     0x000014bb      0x156 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+                                0x32e (size before relaxing)
+ .debug_str     0x00001611       0x89 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+                                0x260 (size before relaxing)
+ .debug_str     0x0000169a      0x15a ./../lib_ubiclib_port_arm/out/libgccarmelf__lib_ubiclib_port_arm.a(ubiclib_port.o)
+ .debug_str     0x000017f4      0x1b6 ././out/libgccarmelf__exe_custom.a(usrmain.o)
+                                0x387 (size before relaxing)
+ .debug_str     0x000019aa      0x123 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+                                0x474 (size before relaxing)
+ .debug_str     0x00001acd       0xf8 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+                                0x324 (size before relaxing)
+ .debug_str     0x00001bc5      0x1e3 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+                                0x4d9 (size before relaxing)
+ .debug_str     0x00001da8      0x3c8 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                                0x80f (size before relaxing)
+ .debug_str     0x00002170      0x2a4 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+                                0x52c (size before relaxing)
+ .debug_str     0x00002414      0x14b ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+                                0x3ae (size before relaxing)
+ .debug_str     0x0000255f       0x5a ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(mem.o)
+                                0x1db (size before relaxing)
+ .debug_str     0x000025b9       0x41 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(uitoa.o)
+                                0x168 (size before relaxing)
+
+.comment        0x00000000       0x81
+ .comment       0x00000000       0x81 ./../bsp_sam4sek2/out/cstartup.o
+                                 0x82 (size before relaxing)
+ .comment       0x00000000       0x82 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+ .comment       0x00000000       0x82 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+ .comment       0x00000000       0x82 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+ .comment       0x00000000       0x82 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+ .comment       0x00000000       0x82 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+ .comment       0x00000000       0x82 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty__nosocheck.o)
+ .comment       0x00000000       0x82 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(ubiclib.o)
+ .comment       0x00000000       0x82 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .comment       0x00000000       0x82 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+ .comment       0x00000000       0x82 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+ .comment       0x00000000       0x82 ./../lib_ubiclib_port_arm/out/libgccarmelf__lib_ubiclib_port_arm.a(ubiclib_port.o)
+ .comment       0x00000000       0x82 ././out/libgccarmelf__exe_custom.a(usrmain.o)
+ .comment       0x00000000       0x82 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+ .comment       0x00000000       0x82 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+ .comment       0x00000000       0x82 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .comment       0x00000000       0x82 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+ .comment       0x00000000       0x82 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+ .comment       0x00000000       0x82 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+ .comment       0x00000000       0x82 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(mem.o)
+ .comment       0x00000000       0x82 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(uitoa.o)
+
+.ARM.attributes
+                0x00000000       0x33
+ .ARM.attributes
+                0x00000000       0x33 ./../bsp_sam4sek2/out/cstartup.o
+ .ARM.attributes
+                0x00000033       0x33 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+ .ARM.attributes
+                0x00000066       0x33 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+ .ARM.attributes
+                0x00000099       0x33 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+ .ARM.attributes
+                0x000000cc       0x33 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+ .ARM.attributes
+                0x000000ff       0x33 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+ .ARM.attributes
+                0x00000132       0x33 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty__nosocheck.o)
+ .ARM.attributes
+                0x00000165       0x33 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(ubiclib.o)
+ .ARM.attributes
+                0x00000198       0x33 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .ARM.attributes
+                0x000001cb       0x33 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+ .ARM.attributes
+                0x000001fe       0x33 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+ .ARM.attributes
+                0x00000231       0x33 ./../lib_ubiclib_port_arm/out/libgccarmelf__lib_ubiclib_port_arm.a(ubiclib_port.o)
+ .ARM.attributes
+                0x00000264       0x33 ././out/libgccarmelf__exe_custom.a(usrmain.o)
+ .ARM.attributes
+                0x00000297       0x33 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+ .ARM.attributes
+                0x000002ca       0x33 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+ .ARM.attributes
+                0x000002fd       0x33 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .ARM.attributes
+                0x00000330       0x33 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+ .ARM.attributes
+                0x00000363       0x33 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+ .ARM.attributes
+                0x00000396       0x33 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+ .ARM.attributes
+                0x000003c9       0x33 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(mem.o)
+ .ARM.attributes
+                0x000003fc       0x33 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(uitoa.o)
+
+.debug_frame    0x00000000     0x165c
+ .debug_frame   0x00000000       0x20 ./../bsp_sam4sek2/out/cstartup.o
+ .debug_frame   0x00000020       0x28 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+ .debug_frame   0x00000048       0x28 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+ .debug_frame   0x00000070      0x1d0 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+ .debug_frame   0x00000240       0xdc ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+ .debug_frame   0x0000031c       0xd8 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+ .debug_frame   0x000003f4       0x40 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty__nosocheck.o)
+ .debug_frame   0x00000434       0x48 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(ubiclib.o)
+ .debug_frame   0x0000047c      0x44c ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .debug_frame   0x000008c8      0x228 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+ .debug_frame   0x00000af0       0x6c ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+ .debug_frame   0x00000b5c       0x30 ./../lib_ubiclib_port_arm/out/libgccarmelf__lib_ubiclib_port_arm.a(ubiclib_port.o)
+ .debug_frame   0x00000b8c       0x50 ././out/libgccarmelf__exe_custom.a(usrmain.o)
+ .debug_frame   0x00000bdc       0xe8 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+ .debug_frame   0x00000cc4      0x160 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+ .debug_frame   0x00000e24      0x250 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .debug_frame   0x00001074      0x250 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+ .debug_frame   0x000012c4      0x1a4 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+ .debug_frame   0x00001468      0x114 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+ .debug_frame   0x0000157c       0x88 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(mem.o)
+ .debug_frame   0x00001604       0x58 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(uitoa.o)
+
+.debug_loc      0x00000000     0x23f2
+ .debug_loc     0x00000000       0x2c ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+ .debug_loc     0x0000002c       0x2c ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+ .debug_loc     0x00000058      0x268 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+ .debug_loc     0x000002c0      0x12c ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+ .debug_loc     0x000003ec      0x158 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+ .debug_loc     0x00000544       0x58 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty__nosocheck.o)
+ .debug_loc     0x0000059c       0x70 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(ubiclib.o)
+ .debug_loc     0x0000060c      0x7b2 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ .debug_loc     0x00000dbe      0x3e4 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+ .debug_loc     0x000011a2       0xb4 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+ .debug_loc     0x00001256       0x70 ././out/libgccarmelf__exe_custom.a(usrmain.o)
+ .debug_loc     0x000012c6      0x164 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+ .debug_loc     0x0000142a      0x1c4 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+ .debug_loc     0x000015ee      0x3f0 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+ .debug_loc     0x000019de      0x3f2 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+ .debug_loc     0x00001dd0      0x2ce ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+ .debug_loc     0x0000209e      0x1f4 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+ .debug_loc     0x00002292       0xdc ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(mem.o)
+ .debug_loc     0x0000236e       0x84 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(uitoa.o)
+
+Cross Reference Table
+
+Symbol                                            File
+EFC_ComputeAddress                                ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+EFC_DisableFrdyIt                                 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+EFC_EnableFrdyIt                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+EFC_GetResult                                     ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+EFC_GetStatus                                     ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+EFC_PerformCommand                                ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+EFC_SetFlashAccessMode                            ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+EFC_SetWaitState                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+EFC_TranslateAddress                              ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+EFC_WriteFMR                                      ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(efc.o)
+FLASHD_ClearGPNVM                                 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+FLASHD_Erase                                      ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+                                                  ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+FLASHD_ErasePages                                 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+FLASHD_EraseSector                                ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+FLASHD_Initialize                                 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+                                                  ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+FLASHD_IsGPNVMSet                                 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+FLASHD_IsLocked                                   ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+FLASHD_Lock                                       ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+FLASHD_ReadUniqueID                               ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+FLASHD_SetGPNVM                                   ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+FLASHD_Unlock                                     ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+FLASHD_Write                                      ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+                                                  ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+__bss_end__                                       ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+__bss_end_boundary__                              ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+__bss_start__                                     ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+__common_end__                                    ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+__common_end_boundary__                           ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+__common_start__                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+__data_end__                                      ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+__data_end_boundary__                             ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+__data_start__                                    ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+__end__                                           ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+__exc_vectors_dst_start__                         ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+__exc_vectors_end__                               ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+__exc_vectors_src_end__                           ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+__exc_vectors_src_start__                         ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+__exc_vectors_start__                             ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+__ram_section_dst_start__                         ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+__ram_section_src_end__                           ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+__ram_section_src_start__                         ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+__rodata_end__                                    ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+__rodata_start__                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+__stack_top__                                     ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+                                                  ./../bsp_sam4sek2/out/cstartup.o
+__stack_top_temp__                                ./../bsp_sam4sek2/out/cstartup.o
+__startup_end__                                   ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+__startup_start__                                 ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+__text_end__                                      ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+__text_start__                                    ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+_bsp_initfirsttask                                ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+_bsp_intrcount                                    ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+_exception_table                                  ./../bsp_sam4sek2/out/cstartup.o
+_g_bsp_dtty_echo                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+_irq_handler_table                                ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+_processor_reset                                  ./../bsp_sam4sek2/out/cstartup.o
+_svc_stack                                        ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+_ubiclib_defaultheap                              ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+_ubiclib_heap                                     ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+_ubiclib_logm_level                               ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+_ubiclib_logm_levelname                           ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+arm_get_apsr                                      ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+arm_get_apsr_nosocheck                            ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+arm_get_cp15                                      ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+                                                  ././out/libgccarmelf__exe_custom.a(usrmain.o)
+arm_get_cp15_nosocheck                            ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+arm_get_epsr                                      ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+arm_get_epsr_nosocheck                            ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+arm_get_ipsr                                      ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+arm_get_ipsr_nosocheck                            ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+arm_get_pendsv                                    ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+arm_get_svcpend                                   ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+arm_get_xpsr                                      ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+arm_get_xpsr_nosocheck                            ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+arm_irq_handler                                   ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                                                  ./../bsp_sam4sek2/out/cstartup.o
+arm_psv_handler                                   ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                                                  ./../bsp_sam4sek2/out/cstartup.o
+arm_set_cp15                                      ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+                                                  ././out/libgccarmelf__exe_custom.a(usrmain.o)
+arm_set_cp15_nosocheck                            ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+arm_set_pendsv                                    ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+arm_set_svcpend                                   ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+arm_swi_handler                                   ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                                                  ./../bsp_sam4sek2/out/cstartup.o
+at91_getnvm                                       ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+                                                  ././out/libgccarmelf__exe_custom.a(usrmain.o)
+at91_setnvm                                       ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+                                                  ././out/libgccarmelf__exe_custom.a(usrmain.o)
+baddr                                             ././out/libgccarmelf__exe_custom.a(usrmain.o)
+bsp_abortsystem                                   ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                                                  ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+bsp_busywait                                      ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+                                                  ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+bsp_busywaitms                                    ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+bsp_bwctotimems                                   ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+bsp_comp_init                                     ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+bsp_disableintr                                   ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+bsp_enableintr                                    ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+bsp_exception_handler                             ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+bsp_getbusywaitcountperms                         ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+                                                  ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+bsp_getcpuclockfreq                               ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+bsp_getcpuclockfreqk                              ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+bsp_getcpuid                                      ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+                                                  ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                                                  ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+bsp_getcpuidsize                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+bsp_getmaxstackusage                              ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+bsp_getmckfreq                                    ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+bsp_getmckfreqk                                   ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+bsp_getsocheckmargin                              ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp2.o)
+bsp_getstacksize                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+bsp_printmemmap                                   ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+bsp_sprintmemmap                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+bsp_swisr                                         ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+bsp_tickisr                                       ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+bsp_timemstobwc                                   ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm.o)
+cmd                                               ././out/libgccarmelf__exe_custom.a(usrmain.o)
+dstptr                                            ././out/libgccarmelf__exe_custom.a(usrmain.o)
+dtty_disable                                      ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+dtty_enable                                       ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+dtty_getc                                         ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+dtty_gets                                         ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+                                                  ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+dtty_init                                         ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+dtty_kbhit                                        ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+dtty_putc                                         ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+                                                  ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+dtty_putc_nosocheck                               ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty__nosocheck.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+dtty_puts                                         ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+                                                  ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+                                                  ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+dtty_puts_nosocheck                               ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty__nosocheck.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+dtty_setecho                                      ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(dtty.o)
+flash                                             ././out/libgccarmelf__exe_custom.a(usrmain.o)
+flash_create                                      ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+                                                  ././out/libgccarmelf__exe_custom.a(usrmain.o)
+flash_delete                                      ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+flash_erase                                       ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+flash_eraseall                                    ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+flash_getaddr                                     ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+flash_getbaddr                                    ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+flash_getchipid                                   ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+flash_getchipidsize                               ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+flash_getsector                                   ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+flash_getsectorbaddr                              ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+flash_getsectorcount                              ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+flash_getsectorsize                               ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+flash_getsectorsizemax                            ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+flash_getsize                                     ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+flash_port_sam7x256ek_create                      ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                                                  ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+flash_port_sam7x256ek_delete                      ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+flash_port_sam7x256ek_erase                       ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+flash_port_sam7x256ek_eraseall                    ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+flash_port_sam7x256ek_getaddr                     ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+flash_port_sam7x256ek_getbaddr                    ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+flash_port_sam7x256ek_getchipid                   ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+flash_port_sam7x256ek_getchipidsize               ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+flash_port_sam7x256ek_getsector                   ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+flash_port_sam7x256ek_getsectorbaddr              ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+flash_port_sam7x256ek_getsectorcount              ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+flash_port_sam7x256ek_getsectorsize               ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+flash_port_sam7x256ek_getsectorsizemax            ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+flash_port_sam7x256ek_getsize                     ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+flash_port_sam7x256ek_readsector                  ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+flash_port_sam7x256ek_write                       ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+flash_port_sam7x256ek_writebyte                   ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+flash_port_sam7x256ek_writesector                 ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+flash_readsector                                  ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+flash_write                                       ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+                                                  ././out/libgccarmelf__exe_custom.a(usrmain.o)
+flash_writebyte                                   ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+flash_writesector                                 ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+flashaction                                       ././out/libgccarmelf__exe_custom.a(usrmain.o)
+free                                              ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+                                                  ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+gets                                              ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+heap_checkboundary                                ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+heap_checkboundaryall                             ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+heap_create                                       ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+heap_delete                                       ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+heap_free                                         ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+heap_getalloccount                                ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+heap_getalloccount_ext                            ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+heap_getalloccountmax                             ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+heap_getalloccountmax_ext                         ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+heap_getallocsize                                 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+heap_getallocsize_ext                             ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+heap_getallocsizemax                              ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+heap_getallocsizemax_ext                          ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+heap_getblockoverhead                             ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+heap_getheapsize                                  ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+heap_getsize                                      ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+heap_malloc                                       ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+heap_mallocn                                      ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+heap_mallocr                                      ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+heap_printheapinfo                                ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+heap_sprintheapinfo                               ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+htobui                                            ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(uitoa.o)
+                                                  ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                                                  ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+logm_getlevel                                     ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+logm_printf                                       ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+                                                  ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                                                  ./../lib_flash/out/libgccarmelf__lib_flash.a(flash.o)
+                                                  ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+logm_setlevel                                     ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)
+                                                  ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(ubiclib.o)
+lowlevel_init                                     ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(lowlevel.o)
+                                                  ./../bsp_sam4sek2/out/cstartup.o
+main                                              ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+                                                  ./../bsp_sam4sek2/out/cstartup.o
+malloc                                            ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+                                                  ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+mallocn                                           ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+mallocr                                           ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+memcmp                                            ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(mem.o)
+memcpy                                            ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(mem.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(flashd.o)
+                                                  ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+memmove                                           ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(mem.o)
+memset                                            ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(mem.o)
+memset0                                           ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(mem.o)
+mutex_create                                      ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                                                  ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                                                  ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+mutex_delete                                      ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                                                  ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                                                  ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+mutex_lock                                        ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                                                  ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                                                  ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+mutex_unlock                                      ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                                                  ./../lib_flash_port_sam7x256ek/out/libgccarmelf__lib_flash_port_sam7x256ek__sam3s4ek.a(flash_port_sam7x256ek.o)
+                                                  ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+printf                                            ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+                                                  ././out/libgccarmelf__exe_custom.a(usrmain.o)
+                                                  ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+putchar                                           ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+                                                  ././out/libgccarmelf__exe_custom.a(usrmain.o)
+puts                                              ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+                                                  ././out/libgccarmelf__exe_custom.a(usrmain.o)
+                                                  ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+size                                              ././out/libgccarmelf__exe_custom.a(usrmain.o)
+snprintf                                          ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+                                                  ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp.o)
+sprintf                                           ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+srcbuf                                            ././out/libgccarmelf__exe_custom.a(usrmain.o)
+srcbufsize                                        ././out/libgccarmelf__exe_custom.a(usrmain.o)
+srcptr                                            ././out/libgccarmelf__exe_custom.a(usrmain.o)
+ubiclib_comp_init                                 ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(ubiclib.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+ubiclib_comp_init_reent                           ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(ubiclib.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+ubiclib_heap_comp_init                            ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+ubiclib_heap_comp_init_reent                      ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+ubiclib_port_comp_init                            ./../lib_ubiclib_port_arm/out/libgccarmelf__lib_ubiclib_port_arm.a(ubiclib_port.o)
+                                                  ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(ubiclib.o)
+ubiclib_port_comp_init_reent                      ./../lib_ubiclib_port_arm/out/libgccarmelf__lib_ubiclib_port_arm.a(ubiclib_port.o)
+                                                  ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(ubiclib.o)
+ubik_iscrit                                       ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+ubik_isrt                                         ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(bsp__arm_nosocheck.o)
+                                                  ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(heap.o)
+uitoa                                             ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(uitoa.o)
+uitoah                                            ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(uitoa.o)
+usrmain                                           ././out/libgccarmelf__exe_custom.a(usrmain.o)
+                                                  ./../bsp_sam4sek2/out/libgccarmelf__bsp_sam4sek2__sram.a(main.o)
+vfprintfn                                         ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(printf.o)
+                                                  ./../lib_ubiclib/out/libgccarmelf__lib_ubiclib.a(logm.o)

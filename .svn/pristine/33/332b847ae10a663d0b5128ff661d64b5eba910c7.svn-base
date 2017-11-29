@@ -1,0 +1,48 @@
+/*
+ * lib_sora_support.h
+ *
+ *  Created on: 2015. 7. 8.
+ *      Author: jaegeun
+ */
+
+#ifndef APPLICATION_LIB_I2C_MASTER_ITF_LIB_SORA_SUPPORT_H_
+#define APPLICATION_LIB_I2C_MASTER_ITF_LIB_SORA_SUPPORT_H_
+
+
+#include <stdio.h>
+#include <stdint.h>
+
+#define printSelArrow()			glcdWriteChar(0x7E)	//->
+
+#define MENU_MAIN_MAX			2
+#define MENU_LF_TEST_MAX		5
+#define MENU_OPERATION_MAX		4
+
+typedef enum _menuState{
+	MENU_MAIN = 0x00,
+	MENU_LF_TEST,
+	MENU_OPERATION,
+} sora_menu_t;
+
+typedef enum _buttonState{
+	BTN_NONE,
+	BTN_SW_1,
+	BTN_SW_2,
+	BTN_SW_3,
+} sora_btn_t;
+
+typedef enum _selMenuNum{
+	SEL_MENU_NONE,
+	SEL_MENU_1 ,
+	SEL_MENU_2 ,
+	SEL_MENU_3 ,
+	SEL_MENU_4 ,
+	SEL_MENU_5 ,
+} sel_menu_t;
+
+void sora_support_init( void );
+void btn_int_sig_send( sora_btn_t btn_num );
+void printMenu( uint8_t menuState, uint8_t selMenu );
+
+#endif /* APPLICATION_LIB_I2C_MASTER_ITF_LIB_SORA_SUPPORT_H_ */
+

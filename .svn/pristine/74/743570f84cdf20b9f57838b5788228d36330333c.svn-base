@@ -1,0 +1,103 @@
+/*
+ * lib_motor_controller.c
+ *
+ *  Created on: 2015. 7. 8.
+ *      Author: minsu
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sam4e.h>
+
+#include "itf_ubinos/itf/bsp.h"
+#include "itf_ubinos/itf/ubinos.h"
+#include "lib_motor_driver/itf/lib_motor_driver.h"
+#include "../itf/lib_motor_controller.h"
+#include "pio/pio.h"
+
+
+void dir_set(uint8_t direction, Pin* dir){
+	uint8_t in=direction;
+
+	switch(in){
+		case CW:
+			dir->type=PIO_OUTPUT_0;
+			pio_configure(dir->pio,dir->type,dir->mask,dir->attribute);
+			break;
+		case CCW:
+			dir->type=PIO_OUTPUT_1;
+			pio_configure(dir->pio,dir->type,dir->mask,dir->attribute);
+			break;
+	}
+}
+void motor_drive(uint8_t direction, Pin* dir, int portnum, int power){
+	dir_set(direction,dir);
+	motor_set(portnum,power);
+}
+void instant_speed_get(float* interval, int pre_enc, int enc, float *speeds){
+	float speed;
+	speed=(enc-pre_enc)/((*interval)*Degrees_Per_Revolution);
+
+	*speeds=speed;}
+
+void calculate_ref_speeds(float vx, float vy, float w, MotorControlData* MCD, uint8_t array_length){
+	int v[4];
+	uint8_t i=0;
+	if(vx==254){
+		vx=-2;
+	}
+	if(vx==255){
+		vx=-1;
+	}
+	if(vy==254){
+		vy=-2;
+	}
+	if(vy==255){
+		vy=-1;
+	}
+	if(w==254){
+		w=-2;
+	}
+	v[0]=vx-vy-(float)(a+b)*w;
+	v[1]=vx+vy+(float)(a+b)*w;
+	v[2]=vx+vy-(float)(a+b)*w;
+	v[3]=vx-vy+(float)(a+b)*w;
+
+	for(i=0;i<array_length;i++){
+		(MCD+i)->motor_ref_speed=(float)v[i];
+		if(i==1 || i==3){
+			if(v[i]<0){
+				(MCD+i)->motor_dir=CCW;
+				(MCD+i)->motor_ref_speed=-((float)((MCD+i)->motor_ref_speed));
+
+			}
+			else{
+				(MCD+i)->motor_dir=CW;
+			}
+		}
+		else{
+			if(v[i]<0){
+				(MCD+i)->motor_dir=CW;
+				(MCD+i)->motor_ref_speed=-((float)((MCD+i)->motor_ref_speed));
+			}
+			else{
+				(MCD+i)->motor_dir=CCW;
+			}
+		}
+	}
+}
+void speed2power(MotorControlData* MCD, uint8_t array_length){
+	uint8_t i=0;
+	for(i=0;i<array_length;i++){
+		(MCD+i)->motor_power=(float)((((MCD+i)->motor_ref_speed)*1024)/((MCD+i)->max_speed));
+	}
+}
+
+void calcuate_angle(unsigned int* cur_encoder_val, unsigned int* pre_encoder_val, float* angle){
+	uint8_t i;
+
+	for(i=0;i<4;i++){
+		*(angle+i) += (float)2*(float)PI*(float)rr*((float)((*(cur_encoder_val+i))-(*(pre_encoder_val+i))))/((float)460*(float)R);
+	}
+}

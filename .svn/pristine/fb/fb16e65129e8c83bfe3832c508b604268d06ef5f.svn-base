@@ -1,0 +1,80 @@
+/*
+ * lib_IRBoard.h
+ *
+ *  Created on: 2015. 7. 20.
+ *      Author: minsu
+ */
+
+#ifndef APPLICATION_SORA_LIB_IRBOARD_ITF_LIB_IRBOARD_H_
+#define APPLICATION_SORA_LIB_IRBOARD_ITF_LIB_IRBOARD_H_
+
+/* ir board로 부터 받은 1byte 신호를 디코딩하는 masking
+ * NUM은 몇번 ir센서에서 신호를 감지했는지를 나타낸다. 		(0번 ~ 7번)
+ * DIR은 감지한 신호가 몇번 ir임을 나타낸다. 				(0번 ~ 7번)
+ * SIZE는 신호의 크기를 나타낸다. 						(0 ~ 3)
+ */
+#define IR_NUM_MASK(num)		((0xe0 & num) >> 5)	// (xxx00000)
+#define IR_DIR_MASK(dir)		((0x1c & dir) >> 2)	// (000xxx00)
+#define IR_SIZE_MASK(size)		(0x03 & size)		// (000000xx)
+
+// ir board에 데이터를 보낼 시 command를 쉬프트 해줌
+#define IR_COMMAND_MASK(ir_command)	(ir_command << 4)
+
+// ir_task에서 동작할 커맨드 정의
+#define IDLE_COMMAND			0x00
+#define IR_TRANS_COMMAND		0x01
+#define IR_TRANS_ALL_COMMAND	0x02
+#define IR_RECEIVE_COMMAND		0x03
+
+#define IR_END_SIGNAL			0xff
+#define IR_NO_SIGNAL			0xc0;
+
+/* 받은 1byte 신호를 분석하여 IR 구조체의 num과 dir, size에 각각 저장함.
+ * 각각의 값은 get_ir_robot_num(), get_ir_robot_dir() 함수와
+ *			get_ir_robot_size() 함수를 통해 return 받을 수 있음
+ */
+typedef struct{
+	int robot_num;
+	int robot_dir;
+	int robot_sig_size;
+}IR;
+
+#define	SPI_MASTER_BASE	SPI
+/** @define LCD Pin assignment(The serial Data Output)*/
+#define IR_SO	SPI_MOSI_GPIO
+#define IR_SO_FLAG	(0<<0)
+/** @define LCD Pin assignment(The serial Data Input)*/
+#define IR_SI	SPI_MISO_GPIO
+#define IR_SI_FLAG	(0<<0)
+/** @define LCD Pin assignment(The serial Clock Input) */
+#define	IR_SCL	SPI_SPCK_GPIO
+#define IR_SCL_FLAG	(0<<0)
+/** @define LCD Pin assignment(Chip select signal) */
+#define	IR_CS	PIO_PC19_IDX
+#define IR_CS_FLAGS	(PIO_OUTPUT_1 | PIO_DEFAULT)
+
+//spi configuration
+#define IR_SPI_CHIP_SEL		2
+#define IR_SPI_CHIP_PCS		spi_get_pcs(IR_SPI_CHIP_SEL)
+
+#define IR_SPI_CLK_POLARITY 	0
+#define IR_SPI_CLK_PHASE		1
+#define SPI_DLYBS			0x00
+#define SPI_DLYBCT			0x00
+#define SPI_BUFFER_SIZE 	32
+
+#define DELAY_BEFORE_SPCK		200 /* 2us min (tCSS) <=> 200/100 000 000 = 2us */
+#define DELAY_BETWEEN_CONS_COM	0xf /* 5us min (tCSH) <=> (32 * 15) / (100 000 000) = 5us */
+
+/* -------------------------------------------------------------------------
+	Function Definitions
+ ------------------------------------------------------------------------- */
+
+void ir_spi_init(void);
+void send_ir_command(int ir_com, int ir_num, int* ir_command, IR* ir);
+void decode_signal(int signal,IR* ir);
+int get_ir_robot_num(IR* ir);
+int get_ir_robot_dir(IR* ir);
+void set_ir_command(int ir_com, int ir_num, int* ir_command, int* ir_number);
+
+#endif /* APPLICATION_SORA_LIB_IRBOARD_ITF_LIB_IRBOARD_H_ */

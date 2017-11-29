@@ -1,0 +1,582 @@
+/*
+ * lib_ubi_pio.c
+ *
+ *  Created on: 2015. 4. 28.
+ *      Author: geoyun
+ */
+
+#include <stdio.h>
+#include <sam4e.h>
+#include <string.h>
+
+// ubinos library include
+#include "itf_ubinos/itf/bsp.h"
+#include "itf_ubinos/itf/ubinos.h"
+#include "itf_ubinos/itf/ubik_msgq.h"
+
+#include "../itf/lib_ata5279c.h"
+
+// new estk driver include
+#include "lib_new_estk_api/itf/new_estk_ioport_set.h"
+
+// chipset driver include
+#include "matrix.h"
+#include "pio/pio.h"
+#include "usart/usart.h"
+#include "sam_gpio/sam_gpio.h"
+#include "sam_usart_spi/usart_spi.h"
+
+/* ------------------------------------------------------------------------- */
+//	LF - ata5279
+/* ------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------
+	Prototypes
+ ------------------------------------------------------------------------- */
+void ata5279_ChipSelect(void);					// chip select
+void ata5279_CS_Release(void);					// chip select release
+void ata5279_setChannel(uint8_t channel);		// antenna set channel
+void ata5279_setCurrent(uint8_t level);			// antenna set current level
+void ata5279_antSetUp( uint8_t channel );		// antenna set up with HW reset and power setting
+
+
+static void ata5279_controlTask(void * arg);	// lf manager task prototype
+
+void ata5279_sendWakeUpNXP( uint8_t data0, uint8_t data1 );	// wake up send lf
+
+void selectAntennaEncoding(uint8_t level);		// antenna encoding (initialize)
+uint8_t getAntennaNum(uint8_t ant);				// get antenna number
+uint8_t getEncodedAntennaPower(uint8_t level);	// get encoded antenna power
+
+/* -------------------------------------------------------------------------
+	Global variables
+ ------------------------------------------------------------------------- */
+uint8_t _gAnt[6];				// encoded antenna select variable (id+power)
+uint8_t _g_lf_antPower;			// antenna power
+int _g_lf_delay;				// task delay
+msgq_pt _lfTriggerMsgq = NULL;	// lf operation trigger for using in manager task
+
+// usart instance
+struct usart_spi_device USART_SPI_DEVICE_EXAMPLE = {
+	/* Board specific select ID. */
+	.id = USART_SPI_DEVICE_EXAMPLE_ID
+};
+
+//static uint32_t gs_ul_spi_clock = 1000000;
+static const unsigned char BitReverseTable256[] =
+{
+  0x00, 0x80, 0x40, 0xC0, 0x20, 0xA0, 0x60, 0xE0, 0x10, 0x90, 0x50, 0xD0, 0x30, 0xB0, 0x70, 0xF0,
+  0x08, 0x88, 0x48, 0xC8, 0x28, 0xA8, 0x68, 0xE8, 0x18, 0x98, 0x58, 0xD8, 0x38, 0xB8, 0x78, 0xF8,
+  0x04, 0x84, 0x44, 0xC4, 0x24, 0xA4, 0x64, 0xE4, 0x14, 0x94, 0x54, 0xD4, 0x34, 0xB4, 0x74, 0xF4,
+  0x0C, 0x8C, 0x4C, 0xCC, 0x2C, 0xAC, 0x6C, 0xEC, 0x1C, 0x9C, 0x5C, 0xDC, 0x3C, 0xBC, 0x7C, 0xFC,
+  0x02, 0x82, 0x42, 0xC2, 0x22, 0xA2, 0x62, 0xE2, 0x12, 0x92, 0x52, 0xD2, 0x32, 0xB2, 0x72, 0xF2,
+  0x0A, 0x8A, 0x4A, 0xCA, 0x2A, 0xAA, 0x6A, 0xEA, 0x1A, 0x9A, 0x5A, 0xDA, 0x3A, 0xBA, 0x7A, 0xFA,
+  0x06, 0x86, 0x46, 0xC6, 0x26, 0xA6, 0x66, 0xE6, 0x16, 0x96, 0x56, 0xD6, 0x36, 0xB6, 0x76, 0xF6,
+  0x0E, 0x8E, 0x4E, 0xCE, 0x2E, 0xAE, 0x6E, 0xEE, 0x1E, 0x9E, 0x5E, 0xDE, 0x3E, 0xBE, 0x7E, 0xFE,
+  0x01, 0x81, 0x41, 0xC1, 0x21, 0xA1, 0x61, 0xE1, 0x11, 0x91, 0x51, 0xD1, 0x31, 0xB1, 0x71, 0xF1,
+  0x09, 0x89, 0x49, 0xC9, 0x29, 0xA9, 0x69, 0xE9, 0x19, 0x99, 0x59, 0xD9, 0x39, 0xB9, 0x79, 0xF9,
+  0x05, 0x85, 0x45, 0xC5, 0x25, 0xA5, 0x65, 0xE5, 0x15, 0x95, 0x55, 0xD5, 0x35, 0xB5, 0x75, 0xF5,
+  0x0D, 0x8D, 0x4D, 0xCD, 0x2D, 0xAD, 0x6D, 0xED, 0x1D, 0x9D, 0x5D, 0xDD, 0x3D, 0xBD, 0x7D, 0xFD,
+  0x03, 0x83, 0x43, 0xC3, 0x23, 0xA3, 0x63, 0xE3, 0x13, 0x93, 0x53, 0xD3, 0x33, 0xB3, 0x73, 0xF3,
+  0x0B, 0x8B, 0x4B, 0xCB, 0x2B, 0xAB, 0x6B, 0xEB, 0x1B, 0x9B, 0x5B, 0xDB, 0x3B, 0xBB, 0x7B, 0xFB,
+  0x07, 0x87, 0x47, 0xC7, 0x27, 0xA7, 0x67, 0xE7, 0x17, 0x97, 0x57, 0xD7, 0x37, 0xB7, 0x77, 0xF7,
+  0x0F, 0x8F, 0x4F, 0xCF, 0x2F, 0xAF, 0x6F, 0xEF, 0x1F, 0x9F, 0x5F, 0xDF, 0x3F, 0xBF, 0x7F, 0xFF
+};
+
+/* -------------------------------------------------------------------------
+	Function Definitions
+ ------------------------------------------------------------------------- */
+
+void send_lf_cmd_msgq(unsigned char * msg)
+{
+	msgq_send(_lfTriggerMsgq, msg);
+}
+
+// Manchester coding 1 byte
+uint16_t mancoding(uint8_t num)
+{
+	uint16_t result = 0;
+	uint8_t i = 0;
+
+	for (i = 0; i < BYTE_NUM; i++)
+	{
+		if ((num >> (BYTE_NUM - i - 1)) & 0x01)
+		{
+			result |= 0x01 << (BYTE_NUM -i -1)*2;
+		}
+		else
+		{
+			result |= 0x02 << (BYTE_NUM - i - 1) * 2;
+		}
+	}
+	return result;
+}
+
+uint8_t reversing(uint8_t num){
+	uint8_t result = 0;
+	uint8_t temp = 0;
+	uint8_t i = 0;
+
+	for(i=0; i<8; i++)
+	{
+		temp =  ( num >> i ) & 0x01;
+
+		result |= temp << (BYTE_NUM - i - 1);
+	}
+	return result;
+}
+
+void ata5279_init( uint8_t antPower )
+{
+	int r;
+
+	MATRIX->CCFG_SYSIO |= (1<<10)|(1<<11);
+
+	gpio_configure_pin(SPI_ATA5279, SPI_ATA5279_FLAGS);
+	gpio_configure_pin(ATA5279_nRES, ATA5279_nRES_FLAG);
+
+// usart1 as SPI configuration
+	// usart peripheral setting
+	ioport_set_pin_peripheral_mode(USART1_MISO_GPIO, USART1_MISO_FLAGS);
+	ioport_set_pin_peripheral_mode(USART1_MOSI_GPIO, USART1_MOSI_FLAGS);
+	ioport_set_pin_peripheral_mode(USART1_SPCK_GPIO, USART1_SPCK_FLAGS);
+
+	// usart1 as spi master
+	usart_spi_init(USART_SPI_EXAMPLE);
+	usart_spi_setup_device(USART_SPI_EXAMPLE, &USART_SPI_DEVICE_EXAMPLE,
+				SPI_MODE_3, USART_SPI_EXAMPLE_BAUDRATE, 0);
+	usart_spi_enable(USART_SPI_EXAMPLE);
+// usart1 configuration end
+
+// antenna power setting
+	lfAntennaPowerSet(antPower);
+
+// lf operation trriger msgq create
+	r = msgq_create(&_lfTriggerMsgq, LF_MSGQSIZE_MAX, LF_MSGCNT_MAX);
+	if (0 != r) {
+		logme("fail at msgq create\r\n");
+	}
+
+// ata5279c LF manager task create
+	r = task_create(NULL, ata5279_controlTask, NULL, task_getmiddlepriority(), 192, "ata5279_controlTask");
+	if (0 != r) {
+		logme("fail at task_create\r\n");
+	}
+}
+
+void ata5279_ChipSelect(void)
+{
+	gpio_set_pin_high(SPI_ATA5279);
+	task_sleep(1);
+}
+
+void ata5279_CS_Release(void)
+{
+	gpio_set_pin_low(SPI_ATA5279);
+}
+
+void ata5279_setChannel(uint8_t channel)
+{
+	uint8_t t = 0x20 | channel;
+	t = BitReverseTable256[t];
+	usart_spi_write_packet(USART_SPI_EXAMPLE, &t, 1);
+}
+
+void ata5279_setCurrent(uint8_t level)
+{
+	uint8_t t = 0xA0 | level;
+	t = BitReverseTable256[t];
+	usart_spi_write_packet(USART_SPI_EXAMPLE, &t, 1);
+}
+
+void ata5279_reset(void)
+{
+	uint8_t t = 0x60;
+	t = BitReverseTable256[t];
+	usart_spi_write_packet(USART_SPI_EXAMPLE, &t, 1);
+}
+
+void ata5279_disable(void)
+{
+	uint8_t t = 0x20;
+	t = BitReverseTable256[t];
+	usart_spi_write_packet(USART_SPI_EXAMPLE, &t, 1);
+}
+void ata5279_HW_reset(void)
+{
+	gpio_set_pin_low(ATA5279_nRES);
+	task_sleep(3);
+	gpio_set_pin_high(ATA5279_nRES);
+}
+
+int ata5279_sendSignalData(uint8_t *buff, uint8_t len)
+{
+	uint8_t hdr = 0;
+
+	if (len > 7)
+		return MAXIMUM_DATA_LENGTH_ERROR;
+	if (len == 0)
+		return EMPTY_DATA_ERROR;
+
+	hdr = ((len * 2) - 1) & 0x0F;
+
+	hdr = BitReverseTable256[hdr];
+
+	usart_spi_write_packet(USART_SPI_EXAMPLE, &hdr, 1);
+	usart_spi_write_packet(USART_SPI_EXAMPLE, buff, len);
+
+	return len;
+}
+
+
+void encodingLF_PtnId(uint8_t *arrPtn, uint16_t _id)
+{
+	uint8_t i =0;
+	uint8_t upperId = ( _id >> 8 ) & 0xFF;
+	uint8_t lowerId = _id & 0xFF;
+	uint16_t tempRes;
+
+	// upper
+	tempRes = mancoding(upperId);
+	arrPtn[0] = (tempRes >> 8) & 0xFF;
+	arrPtn[1] = tempRes & 0xFF;
+
+	// lower
+	tempRes = mancoding(lowerId);
+	arrPtn[2] = (tempRes >> 8) & 0xFF;
+	arrPtn[3] = tempRes & 0xFF;
+
+	for(i=0; i<ATA_LF_PTN_LEN; i++)
+	{
+		arrPtn[i] = reversing(arrPtn[i]);
+	}
+}
+
+void encodingLF_Data(uint8_t *arrData, uint8_t data0, uint8_t data1)
+{
+	uint8_t i =0;
+	uint16_t tempRes;
+
+	// data0
+	tempRes = mancoding(data0);
+	arrData[0] = (tempRes >> 8) & 0xFF;
+	arrData[1] = tempRes & 0xFF;
+
+	// data1
+	tempRes = mancoding(data1);
+	arrData[2] = (tempRes >> 8) & 0xFF;
+	arrData[3] = tempRes & 0xFF;
+
+	for(i=0; i<ATA_LF_DATA_LEN; i++)
+	{
+		arrData[i] = reversing(arrData[i]);
+	}
+}
+
+void ata5279_sendWakeUpNXP( uint8_t data0, uint8_t data1 )
+{
+	uint16_t _ptnID = ATA_LF_PTN_ID;//0xAEC9;
+	uint8_t encodedPatternID[4] = { 0 };
+	uint8_t encodedData[4] = { 0 };
+
+	uint8_t buff[] =
+//	{ 0xAA, 0xAA, 0xB8, 0xA8, 0x8B, 0x32, 0x9A, 0x65, 0x55, 0x55, 0x56, 0xAA, 0x66, 0x9A, 0xFF, 0xFF };
+	{ 0x55, 0x55, 0x1D, 0xD5, 0xD1, 0x4C, 0x59, 0xA6, 0xAA, 0xAA, 0x6A, 0x55, 0x66, 0x59, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+	int i, r;
+	int len;
+
+	len = ATA_LF_PACKET_LEN;
+
+// Manchester coding and reversing , get ID and data
+	encodingLF_PtnId(encodedPatternID, _ptnID);
+	encodingLF_Data(encodedData, data0, data1);
+
+	memcpy(buff+IDX_ATA_LF_PTN,encodedPatternID,ATA_LF_PTN_LEN);
+	memcpy(buff+IDX_ATA_LF_DAT,encodedData,ATA_LF_DATA_LEN);
+
+// reversing
+	for(i = 0; i < len; i++)
+	{
+		buff[i] = BitReverseTable256[buff[i]];
+	}
+
+// PART OF LF PACKET TRANSMIT *******************************************************//
+// ATA5279C has 16 byte buffer, and speed of LF 1 byte is 1ms,
+// So, we add delay in the middle of spi writing.
+
+// chip select
+	ata5279_ChipSelect();
+
+	// preamble
+	ata5279_sendSignalData(buff, ATA_LF_PREAMBLE_LEN);
+
+	// pattern id
+	ata5279_sendSignalData(buff+IDX_ATA_LF_PTN, ATA_LF_PTN_LEN);
+
+	// delay for buffer clear
+	task_sleep(3);
+
+	// data
+	ata5279_sendSignalData(buff+IDX_ATA_LF_DAT, ATA_LF_DATA_LEN);
+
+	// delay for buffer clear
+	task_sleep(5);
+
+	// dummy
+	ata5279_sendSignalData(buff+IDX_ATA_LF_DUMMY, LF_DATA_PACKET_MAX_SIZE);
+	task_sleep(3);	// delay for buffer clear
+	ata5279_sendSignalData(buff+IDX_ATA_LF_DUMMY+7, 2);	// remain of dummy
+
+// cs release
+	ata5279_CS_Release();
+}
+
+void ata5279_antSetUp( uint8_t channel )
+{
+	ata5279_HW_reset();
+
+	ata5279_ChipSelect();
+
+	ata5279_setChannel(channel);
+	ata5279_setCurrent(_g_lf_antPower);
+
+	ata5279_CS_Release();
+
+	task_sleep(3);
+}
+
+void lfAntennaPowerSet( uint8_t power )
+{
+	// antenna power init
+	_g_lf_antPower = power;
+
+	// encoding 2nd command -> antenna id + power
+	selectAntennaEncoding(_g_lf_antPower);
+}
+
+uint8_t getAntennaNum(uint8_t ant)
+{
+	uint8_t antId = (ant & 0xF0);
+
+	switch(antId)
+	{
+		case 0xA0 : return SELECTANT1;
+		case 0xB0 : return SELECTANT2;
+		case 0xC0 : return SELECTANT3;
+		case 0xD0 : return SELECTANT4;
+		case 0xE0 : return SELECTANT5;
+		case 0xF0 : return SELECTANT6;
+	}
+}
+
+uint8_t getEncodedAntennaPower(uint8_t level)
+{
+	switch(level)
+	{
+		case TX_POWER_MIN : 	return 0x01;
+		case TX_POWER_LOW : 	return 0x02;
+		case TX_POWER_MIDDLE : 	return 0x03;
+		case TX_POWER_HIGH : 	return 0x04;
+		case TX_POWER_MAX :		return 0x05;
+	}
+}
+
+// antenna attribute set up
+void selectAntennaEncoding(uint8_t level)
+{
+	uint8_t encodedAntPower = getEncodedAntennaPower(level);
+	_gAnt[ANT_SEL_A] = 0xA0 | encodedAntPower;
+	_gAnt[ANT_SEL_B] = 0xB0 | encodedAntPower;
+	_gAnt[ANT_SEL_C] = 0xC0 | encodedAntPower;
+	_gAnt[ANT_SEL_D] = 0xD0 | encodedAntPower;
+	_gAnt[ANT_SEL_E] = 0xE0 | encodedAntPower;
+	_gAnt[ANT_SEL_F] = 0xF0 | encodedAntPower;
+}
+
+static void ata5279_controlTask(void * arg)
+{
+	int res;
+
+// global command variable initialize
+	uint8_t lf_cmd = CMD_NONE;
+	uint8_t pre_cmd;
+	uint8_t aRxLf_cmd;				// msgq rx buffer
+	uint8_t LfLoopCnt = 0;			// loop counter for user existence test
+	uint8_t userCheckBurstFlag = LF_USR_CHK_BURST_STOP;
+
+// set task delay - variable
+	lfDelaySet(LF_TASK_DELAY_NORMAL);
+
+// main control routine - mode command
+	for (;;)
+	{
+		res = msgq_receive_timedms(_lfTriggerMsgq, &aRxLf_cmd, _g_lf_delay);	// wait delay ms for msgq
+		if(res == 0)	// when there is valid change in msgq
+		{
+			pre_cmd = lf_cmd;
+			lf_cmd = aRxLf_cmd;
+		}
+
+		// main LF cmd processing
+		switch(lf_cmd)
+		{
+			case CMD_NONE :
+				break;
+
+			case CMD_LF_NORMAL_TX :
+				lf_Burst(LF_CMD_RSSI);
+				break;
+
+			case CMD_LF_BLE_CONN_REQ :
+				lf_Burst(LF_CMD_BLE_CONN);
+				break;
+
+			case CMD_LF_BLE_DISCONN :
+				lf_Burst(LF_CMD_BLE_DISCONN);
+				lf_cmd = CMD_NONE;
+				break;
+
+			case CMD_LF_RELIABLE_REGION_CHK :
+				break;
+
+			case CMD_LF_USR_FOLLOW :
+				lf_Burst(LF_CMD_RSSI_FOLLOW);
+				break;
+
+			case CMD_LF_USR_LEAD :
+				break;
+
+			case CMD_LF_STOP :
+				LfLoopCnt = 0;
+				lf_cmd = CMD_NONE;
+				break;
+
+			case CMD_LF_USR_CHK_START :
+				userCheckBurstFlag = LF_USR_CHK_BURST_START;
+				LfLoopCnt = 0; 									// lf loop cnt reset
+				lf_cmd = pre_cmd;
+				break;
+
+			case CMD_LF_USR_CHK_STOP :
+				userCheckBurstFlag = LF_USR_CHK_BURST_STOP;
+				lf_cmd = pre_cmd;
+				break;
+
+			default :
+				break;
+		}
+
+		// usr existence chk burst processing
+		if(userCheckBurstFlag == LF_USR_CHK_BURST_START)
+		{
+			LfLoopCnt++;							// increment loop cnt
+			switch(_g_lf_delay)						// in inerval 2sec, burst user existence check lf signal
+			{
+				case LF_TASK_DELAY_NORMAL :
+					if(LfLoopCnt==2)
+					{
+						task_sleep(20);				// 30ms sleep -> total 50ms for user check
+						LfLoopCnt = 0;				// loop cnt reset
+						lf_Burst(LF_CMD_USR_CHK);	// burst ble conn req cmd for user check - 20ms
+					}
+					else
+					{
+						task_sleep(40);				// not burst time
+					}
+					break;
+
+				case LF_TASK_DELAY_SLOW :
+					task_sleep(20);					// 30ms sleep -> total 50ms for user check
+					LfLoopCnt = 0;					// loop cnt reset
+					lf_Burst(LF_CMD_USR_CHK);		// burst ble conn req cmd for user check - 20ms
+					break;
+
+				case LF_TASK_DELAY_FAST :
+					if(LfLoopCnt==4)
+					{
+						task_sleep(20);				// 30ms sleep -> total 50ms for user check
+						LfLoopCnt = 0;				// loop cnt reset
+						lf_Burst(LF_CMD_USR_CHK);	// burst ble conn req cmd for user check - 20ms
+					}
+					else
+					{
+						task_sleep(40);				// not burst time
+					}
+					break;
+
+				default :
+					break;
+			}
+		}
+		else
+		{
+			task_sleep(40); // 40+10ms delay
+		}
+		task_sleep(10);	// guard for the next burst
+	}
+}
+
+// lf burst interface
+void lf_Burst(uint8_t cmd)
+{
+	switch(cmd)
+	{
+		case LF_CMD_RSSI :
+			ata5279_antSetUp(SELECTANT1);
+			ata5279_sendWakeUpNXP(cmd, _gAnt[ANT_SEL_A]);
+			break;
+
+		case LF_CMD_BLE_CONN :
+			ata5279_antSetUp(SELECTANT1);
+			ata5279_sendWakeUpNXP(cmd, _gAnt[ANT_SEL_A]);
+			break;
+
+		case LF_CMD_BLE_DISCONN :
+			ata5279_antSetUp(SELECTANT1);
+			ata5279_sendWakeUpNXP(cmd, _gAnt[ANT_SEL_A]);
+			break;
+
+		case LF_CMD_REGION_CHK :
+			ata5279_antSetUp(SELECTANT5);
+			ata5279_sendWakeUpNXP(cmd, _gAnt[ANT_SEL_E]);
+
+			task_sleep(10);
+
+			ata5279_antSetUp(SELECTANT6);
+			ata5279_sendWakeUpNXP(cmd, _gAnt[ANT_SEL_F]);
+			break;
+
+		case LF_CMD_RSSI_FOLLOW :
+			ata5279_antSetUp(SELECTANT1);
+			ata5279_sendWakeUpNXP(cmd, _gAnt[ANT_SEL_A]);
+
+			task_sleep(10);
+
+			ata5279_antSetUp(SELECTANT2);
+			ata5279_sendWakeUpNXP(cmd, _gAnt[ANT_SEL_B]);
+			break;
+
+		case LF_CMD_RSSI_LEAD :
+			ata5279_antSetUp(SELECTANT1);
+			ata5279_sendWakeUpNXP(cmd, _gAnt[ANT_SEL_A]);
+
+			task_sleep(10);
+
+			ata5279_antSetUp(SELECTANT2);
+			ata5279_sendWakeUpNXP(cmd, _gAnt[ANT_SEL_B]);
+			break;
+
+		case LF_CMD_USR_CHK :
+			ata5279_antSetUp(SELECTANT1);
+			ata5279_sendWakeUpNXP(cmd, _gAnt[ANT_SEL_A]);
+			break;
+
+		default :
+			break;
+	}
+}
+
+// set delay
+void lfDelaySet(int delay)
+{
+	_g_lf_delay = delay;
+}

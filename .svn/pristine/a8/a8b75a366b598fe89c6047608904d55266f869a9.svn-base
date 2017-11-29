@@ -1,0 +1,171 @@
+/*
+  Copyright (C) 2009 Sung Ho Park
+  Contact: ubinos.org@gmail.com
+
+  This file is part of the exe_helloworld component of the Ubinos.
+
+  GNU General Public License Usage
+  This file may be used under the terms of the GNU
+  General Public License version 3.0 as published by the Free Software
+  Foundation and appearing in the file license_gpl3.txt included in the
+  packaging of this file. Please review the following information to
+  ensure the GNU General Public License version 3.0 requirements will be
+  met: http://www.gnu.org/copyleft/gpl.html.
+
+  GNU Lesser General Public License Usage
+  Alternatively, this file may be used under the terms of the GNU Lesser
+  General Public License version 2.1 as published by the Free Software
+  Foundation and appearing in the file license_lgpl.txt included in the
+  packaging of this file. Please review the following information to
+  ensure the GNU Lesser General Public License version 2.1 requirements
+  will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+
+  Commercial Usage
+  Alternatively, licensees holding valid commercial licenses may
+  use this file in accordance with the commercial license agreement
+  provided with the software or, alternatively, in accordance with the
+  terms contained in a written agreement between you and rightful owner.
+*/
+
+#include "../ubiconfig.h"
+
+#include <stdio.h>
+
+
+#include "itf_ubinos/itf/bsp.h"
+#include "itf_ubinos/itf/ubinos.h"
+
+#include "pio/pio.h"
+#include "lib_ubi_pio/itf/lib_ubi_pio.h"
+//#include "lib_timer/itf/lib_timer.h"
+#include "tc/tc.h"
+
+#define BUTTON_BUFFER_SIZE	10
+#define	BUTTON_BUFFER_COUNT	10
+msgq_pt button_msgq_pt;
+
+/* button */
+#define BUTTON_PORT			PORTA
+#define	BUTTON_TEST_DIFF	2
+#define	BUTTON_TEST_START	19
+#define	BUTTON_TEST_END		20
+
+/* hrtick pt */
+//hrtick_t test_hrtick_start;
+//hrtick_t test_hrtick_end;
+//hrtick_t test_hrtick_diff;
+//timer_st test_timer;
+
+static void button_handler(uint32_t id, uint32_t mask) {
+	uint8_t packet_buffer[BUTTON_BUFFER_SIZE] = { 0, };
+
+//	packet_buffer[1] = pio_get(PIOA, PIO_INPUT, mask);
+
+
+	if (mask == (1 << BUTTON_TEST_START)) {
+		packet_buffer[1] = ubi_pio_getPin(BUTTON_PORT, BUTTON_TEST_START ,UBI_PIO_INPUT);
+		packet_buffer[0] = BUTTON_TEST_START;
+
+	}
+	/* test */
+	else if (mask == (1 << BUTTON_TEST_END)) {
+		packet_buffer[1] = ubi_pio_getPin(BUTTON_PORT, BUTTON_TEST_END ,UBI_PIO_INPUT);
+		packet_buffer[0] = BUTTON_TEST_END;
+	}
+	/* scroll up*/
+	else if (mask == (1 << BUTTON_TEST_DIFF)) {
+		packet_buffer[1] = ubi_pio_getPin(BUTTON_PORT, BUTTON_TEST_DIFF ,UBI_PIO_INPUT);
+		packet_buffer[0] = BUTTON_TEST_DIFF;
+	}
+
+
+	msgq_send(button_msgq_pt, packet_buffer);
+}
+
+#define	TEST_ATTR_RISE		(PIO_PULLUP | PIO_DEBOUNCE | PIO_IT_RISE_EDGE)
+#define	TEST_ATTR_FALL		(PIO_PULLUP | PIO_DEBOUNCE | PIO_IT_FALL_EDGE)
+#define TIMEOUT	1000
+static void test_function(void)
+{
+	int r;
+	uint8_t packet_buffer[BUTTON_BUFFER_SIZE] = {0,};
+	for(;;)
+	{
+		r = msgq_receive(button_msgq_pt, packet_buffer);
+		if (0 != r)
+		{
+			logme("fail at msgq_receive\r\n");
+		}
+		switch (packet_buffer[0]) {
+			case BUTTON_TEST_START:
+				printf("start\r\n");
+
+				break;
+
+			case BUTTON_TEST_END:
+				printf("end\r\n");
+
+				break;
+
+			case BUTTON_TEST_DIFF:
+
+				break;
+			default:
+				break;
+		}
+	}
+}
+static void time_test_function(void)
+{
+	int r;
+	uint32_t tccv = 0;
+	uint32_t tcra = 0;
+	uint32_t tcrc = 0;
+	for(;;)
+	{
+//		tccv = tc_read_cv(TC0, 0);
+//		tcra = tc_read_ra(TC0, 0);
+//		tcrb = tc_read_rb(TC0, 0);
+//		tcrc = tc_read_rc(TC0, 0);
+//		printf("===============================================\r\n");
+//		printf("tc_read_cv(TC0, 0); : %x\r\n", tccv);
+//		printf("tc_read_ra(TC0, 0); : %x\r\n", tcra);
+//		printf("tc_read_rb(TC0, 0); : %x\r\n", tcrb);
+//		printf("tc_read_rc(TC0, 0); : %x\r\n", tcrc);
+//		printf("===============================================\r\n");
+		task_sleep(1000);
+
+	}
+
+}
+
+
+/* need to set information */
+int button_init(void) {
+	int r;
+
+	r = task_create(NULL, test_function, NULL, task_gethighestpriority(), 256, "test");
+	if (0 != r)
+	{
+		logme("fail at task_create\r\n");
+	}
+
+	r = task_create(NULL, time_test_function, NULL, task_gethighestpriority(), 256, "time");
+	if (0 != r)
+	{
+		logme("fail at task_create\r\n");
+	}
+
+	r = msgq_create(&button_msgq_pt, BUTTON_BUFFER_SIZE, BUTTON_BUFFER_COUNT);
+	if (0 != r)
+	{
+		logme("fail at msgq_create\r\n");
+	}
+
+	/* button */
+	ubi_pio_interrupt_config(PORTA, BUTTON_TEST_START, TEST_ATTR_RISE, button_handler);
+	ubi_pio_interrupt_config(PORTA, BUTTON_TEST_END, TEST_ATTR_RISE, button_handler);
+	ubi_pio_interrupt_config(PORTA, BUTTON_TEST_DIFF, TEST_ATTR_RISE, button_handler);
+
+	return 0;
+}

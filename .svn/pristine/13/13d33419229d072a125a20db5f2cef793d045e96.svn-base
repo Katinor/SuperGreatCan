@@ -1,0 +1,51 @@
+/*
+ * lib_sora_ext_sw.c
+ *
+ *  Created on: 2015. 7. 3.
+ *      Author: jaegeun
+ */
+#include <stdio.h>
+#include <sam4e.h>
+
+#include "itf_ubinos/itf/bsp.h"
+#include "itf_ubinos/itf/ubinos.h"
+#include "itf_ubinos/itf/bsp_intr.h"
+#include "itf_ubinos/itf/ubik_signal.h"
+
+#include "sam_gpio/sam_gpio.h"
+
+#include "../itf/lib_sora_ext_sw.h"
+#include "../itf/lib_sora_support.h"
+
+#include "lib_new_estk_api/itf/new_estk_led.h"
+#include "../../exe_sora_test1/hdr/sora_config.h"
+
+/* ------------------------------------------------------------------------- */
+//	External Switch
+/* ------------------------------------------------------------------------- */
+void extSW_init(void)
+{
+	pio_configure(PIN_EXT_SW1.pio, PIN_EXT_SW1.type, PIN_EXT_SW1.mask, PIN_EXT_SW1.attribute);
+	pio_configure(PIN_EXT_SW2.pio, PIN_EXT_SW2.type, PIN_EXT_SW2.mask, PIN_EXT_SW2.attribute);
+	pio_configure(PIN_EXT_SW3.pio, PIN_EXT_SW3.type, PIN_EXT_SW3.mask, PIN_EXT_SW3.attribute);
+
+	ubi_pio_interrupt_config(PORTD, EXT_SW1_PIN_NUM, PIN_EXT_SW1.attribute, ext_SW_handler);
+	ubi_pio_interrupt_config(PORTD, EXT_SW2_PIN_NUM, PIN_EXT_SW2.attribute, ext_SW_handler);
+	ubi_pio_interrupt_config(PORTD, EXT_SW3_PIN_NUM, PIN_EXT_SW3.attribute, ext_SW_handler);
+}
+
+void ext_SW_handler(uint32_t id, uint32_t mask)
+{
+	if(mask == PIN_EXT_SW1.mask)
+	{
+		btn_int_sig_send(BTN_SW_1);
+	}
+	else if(mask == PIN_EXT_SW2.mask)
+	{
+		btn_int_sig_send(BTN_SW_2);
+	}
+	else if(mask == PIN_EXT_SW3.mask){
+		btn_int_sig_send(BTN_SW_3);
+	}
+}
+

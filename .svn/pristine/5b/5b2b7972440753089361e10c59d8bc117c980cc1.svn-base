@@ -1,0 +1,15 @@
+/*
+ * lib_sora_motor_drive.h
+ *
+ *  Created on: 2015. 7. 22.
+ *      Author: Administrator
+ */
+
+#ifndef APPLICATION_SORA_LIB_MOTOR_CONTROLLER_ITF_LIB_SORA_MOTOR_DRIVE_H_
+#define APPLICATION_SORA_LIB_MOTOR_CONTROLLER_ITF_LIB_SORA_MOTOR_DRIVE_H_
+
+void sora_motor_drive_init(void);
+
+
+
+#endif /* APPLICATION_SORA_LIB_MOTOR_CONTROLLER_ITF_LIB_SORA_MOTOR_DRIVE_H_ */

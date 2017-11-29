@@ -1,0 +1,430 @@
+/*
+ * lib_sora_lf_service_manager.c
+ *
+ *  Created on: 2015. 7. 18.
+ *      Author: jaegeun
+ */
+
+#include <stdio.h>
+#include <sam4e.h>
+#include <string.h>
+
+// ubinos library include
+#include "itf_ubinos/itf/bsp.h"
+#include "itf_ubinos/itf/ubinos.h"
+#include "itf_ubinos/itf/ubik_signal.h"
+#include "itf_ubinos/itf/ubik_msgq.h"
+#include "itf_ubinos/itf/ubik_sem.h"
+
+#include "lib_new_estk_api/itf/new_estk_glcd.h"
+#include "lib_new_estk_api/itf/new_estk_led.h"
+
+#include "../itf/lib_sora_lf_service_manager.h"
+#include "../itf/lf_distance.h"
+
+#include "../../exe_sora_test1/hdr/sora_config.h"
+
+#include "../../lib_ata5279c/itf/lib_ata5279c.h"
+#include "../../lib_IBU/itf/lib_IBU.h"
+
+/* -------------------------------------------------------------------------
+	Prototypes
+ ------------------------------------------------------------------------- */
+static void lfServiceManager(void * arg);				// task
+static void processingIbuData(void * arg);				// task
+static void usrCheckTask(void * arg);					// task
+LF_DATA parsingLfResultData(uint8_t *arr, uint8_t size);
+void printDistanceTest(LF_DATA dat, VECT vect);
+
+/* -------------------------------------------------------------------------
+	Global variables
+ ------------------------------------------------------------------------- */
+msgq_pt _lfServiceMsgq = NULL;		// sora support manager -> lf svc manager
+sem_pt	_usrChkTaskTrigSem = NULL;	// user check task trigger semaphore
+
+uint8_t	_g_usrChkTaskFlag = LF_USR_TASK_STOP;	// task start flag
+uint8_t _g_isIbuBleConnected;	// ble connected status
+
+sem_pt _bleConnectedSem = NULL;		// ibu manager -> lf svc manager to alarm connection of ble
+msgq_pt	_lfDistanceMsgq = NULL;		// ibu manager -> lf svc manager to send distance of each antenna
+sem_pt _lfSVCusrChkSem = NULL;		// ibu manager -> lf svc manager to alram usr chk ack
+
+/* -------------------------------------------------------------------------
+	Function Definitions
+ ------------------------------------------------------------------------- */
+
+void lfServiceInit( void )
+{
+	int r;
+
+// lf init with power high
+	ata5279_init(TX_POWER_HIGH);
+
+// signal create
+
+// sem create
+	r = semb_create(&_usrChkTaskTrigSem);
+	if (0 != r) {
+		logme("fail at sem create\r\n");
+	}
+	r = sem_create(&_bleConnectedSem);
+	if (0 != r) {
+		logme("fail at sem create\r\n");
+	}
+	r = sem_create(&_lfSVCusrChkSem);
+	if (0 != r) {
+		logme("fail at sem create\r\n");
+	}
+
+// msgq create
+	r = msgq_create(&_lfDistanceMsgq, LF_SVC_MSGQSIZE_MAX, LF_SVC_MSGCNT_MAX);
+	if (0 != r) {
+		logme("fail at msgq create\r\n");
+	}
+	r = msgq_create(&_lfServiceMsgq, LF_SVC_CMD_MSGQSIZE_MAX, LF_SVC_CMD_MSGCNT_MAX);
+	if (0 != r) {
+		logme("fail at msgq create\r\n");
+	}
+
+// lf service manager task create
+	r = task_create(NULL, lfServiceManager, NULL, task_getmiddlepriority(), 192, "lfServiceManager");
+	if (0 != r) {
+		logme("fail at task_create\r\n");
+	}
+
+// lf service manager task create
+	r = task_create(NULL, processingIbuData, NULL, task_getmiddlepriority(), 192, "processingIbuData");
+	if (0 != r) {
+		logme("fail at task_create\r\n");
+	}
+
+// user existence check task
+	r = task_create(NULL, usrCheckTask, NULL, task_getmiddlepriority(), 192, "usrCheckTask");
+	if (0 != r) {
+		logme("fail at task_create\r\n");
+	}
+
+}
+
+void send_lf_svc(lf_svc_t mode)
+{
+	uint8_t lf_svc_buf;
+
+	lf_svc_buf = mode;
+
+	msgq_send(_lfServiceMsgq, &lf_svc_buf);
+}
+
+void send_lf_dis_msgq(unsigned char * msg)
+{
+	msgq_send(_lfDistanceMsgq, msg);
+}
+
+void ble_connection_ok_sem( void )
+{
+	sem_give(_bleConnectedSem);
+}
+
+void usr_check_ok_sem( void )
+{
+	sem_give(_lfSVCusrChkSem);// semaphore give to lf svc
+}
+
+void sendMsgqToLfController(int cmd, int delayset)
+{
+	uint8_t txLfBuf;
+	txLfBuf =cmd;
+
+	if(delayset != LF_DELAY_NONE_SET)
+	{
+		lfDelaySet(delayset);
+	}
+
+	send_lf_cmd_msgq(&txLfBuf);
+}
+
+
+// lf service manager task
+static void lfServiceManager(void * arg)
+{
+	int r;
+// LF Service state
+	lf_svc_t lfServiceState = LF_SVC_NONE;
+
+// ble set as disconnected
+	_g_isIbuBleConnected = IBU_BLE_DISCONNECTED;
+
+// Main loop manager
+	for(;;)
+	{
+		 msgq_receive(_lfServiceMsgq, &lfServiceState);	// wait for signal
+
+		// state machine
+		switch(lfServiceState)
+		{
+			case LF_SVC_NONE :
+				break;
+
+			case LF_SVC_USR_SEARCH :
+				sem_give(_usrChkTaskTrigSem);	// usr check task trigger
+				break;
+
+			case LF_SVC_USR_SEARCH_STOP :
+				_g_usrChkTaskFlag = LF_USR_TASK_STOP;	//task stop
+				sem_clear(_usrChkTaskTrigSem);			// usr check task trigger sem reset
+				sendMsgqToLfController(CMD_LF_USR_CHK_STOP, LF_DELAY_NONE_SET);		// lf usr chk stop
+				break;
+
+			case LF_SVC_NORMAL_BURST :
+				sendMsgqToLfController(CMD_LF_NORMAL_TX, LF_TASK_DELAY_SLOW);
+				break;
+
+			case LF_SVC_RELIABLE_REGION_CHK :				// *** need to implementation
+				sendMsgqToLfController(CMD_LF_RELIABLE_REGION_CHK, LF_TASK_DELAY_FAST);
+				break;
+
+			case LF_SVC_USR_FOLLOW :
+				if( _g_isIbuBleConnected == IBU_BLE_DISCONNECTED)
+				{
+					IBU_scanStart();
+					sendMsgqToLfController(CMD_LF_BLE_CONN_REQ, LF_DELAY_NONE_SET);	// ble req
+
+					r = sem_take_timedms(_bleConnectedSem, 5000);	// wait 3sec for ble connection compete ack
+					if(r == 0)								// connection success
+					{
+						_g_isIbuBleConnected = IBU_BLE_CONNECTED;
+
+					}
+					else									// connection fail
+					{
+						sendMsgqToLfController(CMD_LF_STOP, LF_TASK_DELAY_NORMAL); // stop and reset delay
+
+						lfServiceState = LF_SVC_NONE;		// reset service state
+					}
+				}
+
+				if(_g_isIbuBleConnected == IBU_BLE_CONNECTED)
+				{
+					// go following
+					sendMsgqToLfController(CMD_LF_USR_FOLLOW, LF_TASK_DELAY_FAST);
+				}
+				break;
+
+			case LF_SVC_USR_LEAD :							// *** need to implementation
+				sendMsgqToLfController(CMD_LF_USR_LEAD, LF_TASK_DELAY_FAST);
+				break;
+
+			case LF_SVC_USR_RECOG_STOP :
+				sendMsgqToLfController(CMD_LF_STOP, LF_TASK_DELAY_NORMAL);
+				break;
+
+			case LF_SVC_STOP :	// lf service stop
+
+				// user check task stop!
+				_g_usrChkTaskFlag = LF_USR_TASK_STOP;	//task stop
+				sem_clear(_usrChkTaskTrigSem);			// usr check task trigger sem reset
+				sendMsgqToLfController(CMD_LF_USR_CHK_STOP, LF_DELAY_NONE_SET);		// lf usr chk stop
+
+				// ble connection end!
+				IBU_BLE_disconnection();						// disconnect req to IBU
+				sendMsgqToLfController(CMD_LF_STOP, LF_TASK_DELAY_NORMAL);			// send ble conn end signal to PAAR watch
+
+				lfServiceState = LF_SVC_NONE;		// reset service state
+				break;
+
+			default :
+				break;
+		}
+	}
+}
+
+
+// deal with distance of each antenna in follwing, leading region chk operation
+// process task
+static void processingIbuData(void * arg)
+{
+	int r;
+	uint8_t ibuDataBuffer[20] = {0};
+	LF_DATA lf_data = {0,};
+	VECT lf_vect = {0,};
+
+	int lf_send_buf[3]={0,};
+
+	for(;;)
+	{
+		r = msgq_receive(_lfDistanceMsgq, ibuDataBuffer);
+		if(r != 0) // fail to receive
+		{
+			continue;
+		}
+
+		lf_data = parsingLfResultData(ibuDataBuffer, strlen(ibuDataBuffer));	// data parsing
+		lf_vect = getVector(lf_data);											// get vector
+
+		switch(lf_data.cmd)
+		{
+			case LF_CMD_REGION_CHK :
+				break;
+
+			case LF_CMD_RSSI_FOLLOW :
+				printDistanceTest(lf_data,lf_vect);
+
+				// arr[LF_SAMPLE_DISTANCE_IDX] = distance, and arr[1] = direction
+				lf_send_buf[LF_SAMPLE_DISTANCE_IDX] = lf_vect.distance;
+				lf_send_buf[LF_SAMPLE_DIRECTION_IDX] = lf_vect.direction;
+
+				lf_sampling_send((unsigned char *)lf_send_buf);
+				break;
+
+			case LF_CMD_RSSI_LEAD :
+				break;
+		}
+	}
+}
+
+LF_DATA parsingLfResultData(uint8_t *arr, uint8_t size)
+{
+	LF_DATA res = {0,};
+
+	res.cmd = arr[LF_DAT_CMD_IDX];
+	res.firstAnt_Att = arr[LF_DAT_FIRST_ANT_ATT_IDX];
+	res.firstAnt_Dis = arr[LF_DAT_FIRST_ANT_DIS_IDX];
+	res.secondAnt_Att = arr[LF_DAT_SECOND_ANT_ATT_IDX];
+	res.secondAnt_Dis = arr[LF_DAT_SECOND_ANT_DIS_IDX];
+
+	if(arr[LF_DAT_CMD_IDX] == LF_CMD_REGION_CHK)
+		res.region = arr[LF_DAT_REGION_IDX];
+	else
+		res.region = NULL;
+
+	return res;
+}
+
+void printDistanceTest(LF_DATA dat, VECT vect)
+{
+	glcd_clear();
+	glcdGotoChar(0,0);
+
+	glcd_printf("user recog test!\n");
+
+	glcdGotoChar(0,1);
+	glcd_printf("cmd : %X  ",dat.cmd);
+	glcdGotoChar(0,2);
+	glcd_printf("antA, att:%X, dis:%d",dat.firstAnt_Att, dat.firstAnt_Dis);
+
+	glcdGotoChar(0,3);
+	glcd_printf("antB, att:%X, dis:%d",dat.secondAnt_Att, dat.secondAnt_Dis);
+
+	glcdGotoChar(0,4);
+	glcd_printf("------------------");
+
+	glcdGotoChar(0,5);
+	glcd_printf("x:%3d, y:%3d",(int)vect.x, (int)vect.y);
+
+	glcdGotoChar(0,6);
+	glcd_printf("dis:%3d, dir:%3d", vect.distance, vect.direction);
+
+	printf("ant A : %d\n\r",dat.firstAnt_Dis);
+	printf("ant B : %d\n\r",dat.secondAnt_Dis);
+}
+//
+
+static void usrCheckTask(void * arg)
+{
+	int res;
+	int usrChkAckFailCnt = 0;
+
+	for(;;)
+	{
+		sem_take(_usrChkTaskTrigSem);
+		_g_usrChkTaskFlag = LF_USR_TASK_START;
+
+		if(_g_isIbuBleConnected == IBU_BLE_DISCONNECTED)
+		{
+			IBU_BLE_disconnection();	// for reset.
+			IBU_scanStart();
+			sendMsgqToLfController(CMD_LF_BLE_CONN_REQ, LF_TASK_DELAY_SLOW);	// ble req
+
+			res = sem_take_timedms(_bleConnectedSem,5000);	// ble connection compete ack
+			if(res == 0)// connection ok
+			{
+				sendMsgqToLfController(CMD_LF_STOP, LF_TASK_DELAY_NORMAL);
+				_g_isIbuBleConnected = IBU_BLE_CONNECTED;
+
+				usr_isHere_sem_give();		// main operation, op usr waiting, trigger next seq
+			}
+			else
+			{
+				// connection fail... exit
+				_g_usrChkTaskFlag = LF_USR_TASK_STOP;
+			}
+		}
+
+		if(_g_isIbuBleConnected == IBU_BLE_CONNECTED)
+		{
+			sendMsgqToLfController(CMD_LF_USR_CHK_START, LF_DELAY_NONE_SET);	// usr chk start
+
+			// check sequence
+			for(;;)
+			{
+				// when there is no user with in 2m, in 6sec
+				if(usrChkAckFailCnt >= 2)
+				{
+					// processing exception
+					// robot stop and go to RC mode
+					op_cmd_send(cmd_emergency_rc);		// ** need to implement
+
+					// send emergency msg to PAAR Watch ( ble send req )
+					IBU_sendEmergencyMsg();							// ** If there is no ack,,, resend msg... need to implement
+																	// ** in smart watch, if user check msg, pass it. (watch)
+					// wait for complete sem -- ACK ok,
+					res = sem_take(_lfSVCusrChkSem);
+					if( res == 0 )					// when user is come back,
+					{
+						// usrChkAck Fail Cnt reset
+						usrChkAckFailCnt = 0;	// fail counter reset
+
+						// exit emergency rc mode
+						op_cmd_send(cmd_exit_emergency);		// ** need to implement
+
+						led_blink(LED1);		// led blink - blue
+					}
+				}
+				else
+				{
+					// check whether if there is user or not
+					res = sem_take_timedms(_lfSVCusrChkSem, 2950);
+					if(res != 0)// fail to sem take - there is no ack
+					{
+						if(_g_isIbuBleConnected == IBU_BLE_CONNECTED)
+						{
+							usrChkAckFailCnt++;		// increase the fail counter
+
+							led_blink(LED3);		// led blink - orange
+						}
+					}
+					else		// if there is ack
+					{
+						usrChkAckFailCnt = 0;		// fail counter reset
+
+						led_blink(LED1);			// led blink - blue
+					}
+				}
+				// task stop flag check
+				if(_g_usrChkTaskFlag == LF_USR_TASK_STOP)
+				{
+					usrChkAckFailCnt = 0;	// fail counter reset
+					break;
+				}
+			}
+
+		}
+
+	}
+
+}
+
+
+
+
+

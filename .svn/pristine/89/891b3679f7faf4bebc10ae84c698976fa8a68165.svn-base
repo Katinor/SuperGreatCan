@@ -1,0 +1,299 @@
+/*
+ * lib_sora_support.c
+ *
+ *  Created on: 2015. 7. 8.
+ *      Author: jaegeun
+ */
+
+#include <stdio.h>
+#include <sam4e.h>
+
+#include "itf_ubinos/itf/bsp.h"
+#include "itf_ubinos/itf/ubinos.h"
+#include "itf_ubinos/itf/ubik_signal.h"
+
+#include "lib_new_estk_api/itf/new_estk_glcd.h"
+
+#include "../itf/lib_sora_support.h"
+#include "../itf/lib_sora_ext_sw.h"
+#include "../itf/lib_sora_lf_service_manager.h"
+
+#include "../../exe_sora_test1/hdr/sora_config.h"
+
+#include "../../lib_ata5279c/itf/lib_ata5279c.h"
+#include "../../lib_IBU/itf/lib_IBU.h"
+
+signal_pt _menuTrigger = NULL;				// menu trigger signal
+static void soraMenuManager(void * arg);	// menu manager task
+
+void sora_support_init( void )
+{
+	int r;
+
+// external switch initialize
+	extSW_init();
+
+// lf service init
+	lfServiceInit();
+
+// RF init
+	IBU_component_init();
+
+// signal create
+	r = signal_create(&_menuTrigger);
+	if (0 != r) {
+		logme("fail at signal create\r\n");
+	}
+
+// menu manager task create
+	r = task_create(NULL, soraMenuManager, NULL, task_getmiddlepriority(), 192, "menu");
+	if (0 != r) {
+		logme("fail at task_create\r\n");
+	}
+}
+
+void btn_int_sig_send( sora_btn_t btn_num )
+{
+	signal_send(_menuTrigger, btn_num);
+}
+
+uint8_t getSelMax(uint8_t menuState)
+{
+	switch(menuState)
+	{
+		case MENU_MAIN :
+			return MENU_MAIN_MAX;
+		case MENU_LF_TEST :
+			return MENU_LF_TEST_MAX;
+		case MENU_OPERATION :
+			return MENU_OPERATION_MAX;
+	}
+}
+
+uint8_t getMenuState(uint8_t menu, uint8_t sel)
+{
+	if(menu == MENU_MAIN)
+	{
+		switch(sel)
+		{
+			case SEL_MENU_1 :
+				return MENU_LF_TEST;
+			case SEL_MENU_2 :
+				return MENU_OPERATION;
+		}
+	}
+	else if(menu == MENU_LF_TEST)
+	{
+		if( sel == SEL_MENU_5 )
+			return MENU_MAIN;
+		else
+			return MENU_LF_TEST;
+	}
+	else if(menu == MENU_OPERATION)
+	{
+		if( sel == SEL_MENU_4 )
+			return MENU_MAIN;
+		else
+			return MENU_OPERATION;
+	}
+// can't access below
+	return 0;
+}
+
+void soraOperationTrigger( uint8_t menu, uint8_t sel )
+{
+	if(menu == MENU_MAIN)
+	{
+		// none
+	}
+	else if(menu == MENU_LF_TEST)
+	{
+		// trigger LF operation
+		switch(sel)
+		{
+			case SEL_MENU_1 : // normal LF burst , ant1
+				send_lf_svc(LF_SVC_NORMAL_BURST);
+				break;
+			case SEL_MENU_2 : // double LF burst for user recognition (ant1, ant2)
+				send_lf_svc(LF_SVC_USR_FOLLOW);
+				break;
+			case SEL_MENU_3 : // double LF burst for reliable region check (ant3, ant4)
+				send_lf_svc(LF_SVC_RELIABLE_REGION_CHK);
+				break;
+			case SEL_MENU_4 : // all LF burst disable
+				send_lf_svc(LF_SVC_STOP);
+				break;
+			case SEL_MENU_5 : // return to before state
+				// none
+				break;
+			default :
+				break;
+		}
+	}
+	else if(menu == MENU_OPERATION)
+	{
+		//trigger main operation
+		switch(sel)
+		{
+			case SEL_MENU_1 :
+				op_cmd_send(cmd_svc_start);
+				break;
+			case SEL_MENU_2 :
+				op_cmd_send(cmd_following);
+				break;
+			case SEL_MENU_3 :
+				op_cmd_send(cmd_cancel);
+				break;
+			case SEL_MENU_4 : // return to main
+				//none
+				break;
+			default :
+				break;
+		}
+	}
+}
+
+static void soraMenuManager(void * arg)
+{
+	sora_menu_t menuState = MENU_MAIN;
+	sora_btn_t btnState = BTN_NONE;
+	sel_menu_t selMenuNum = SEL_MENU_NONE;
+	uint8_t selMax = 0;
+	sora_menu_t preSelectedMenu = 0;
+
+	printMenu(MENU_MAIN, SEL_MENU_NONE);
+
+	// sora menu manager main loop
+	// it works as button event driven function
+	for(;;)
+	{
+		btnState = signal_wait(_menuTrigger);
+
+		switch(btnState)
+		{
+			case BTN_SW_1 :	// select arrow btn
+				selMenuNum++;
+				selMax = getSelMax(menuState);
+				if(selMenuNum > selMax)
+				{
+					selMenuNum -= (selMax+1);
+				}
+				break;
+			case BTN_SW_2 :	// ok btn
+				preSelectedMenu = menuState;
+
+				if(selMenuNum != SEL_MENU_NONE){
+					soraOperationTrigger(menuState, selMenuNum);		// operation trigger * main control function
+					menuState = getMenuState(menuState, selMenuNum);	// get menu state
+				}
+
+				if(menuState != preSelectedMenu){	// menu change chk if there is change reset select arrow
+					selMenuNum = SEL_MENU_NONE;	// selecet menu reset
+				}
+				break;
+
+			case BTN_SW_3 :	// oepration cancel btn
+				// all operation stop
+				soraOperationTrigger(MENU_LF_TEST,SEL_MENU_4); // all operation stop trigger
+				break;
+
+			default :	// error
+				printf("Insert Button Error in sora manager. please check\n\r");
+				break;
+		}
+
+		// print menu
+		printMenu(menuState, selMenuNum);
+
+		// guard sleep , dosen't need
+		task_sleep(100);
+	}
+}
+void printMainMenu( uint8_t menuRow )
+{
+	switch(menuRow)
+	{
+		case 0 : // normal LF burst , ant1
+			glcd_printf("LF operation\n");
+			break;
+		case 1 : // double LF burst for user recognition (ant1, ant2)
+			glcd_printf("service start\n");
+			break;
+		default :
+			break;
+	}
+}
+void printLFMenu( uint8_t menuRow )
+{
+	switch(menuRow)
+	{
+		case 0 : // normal LF burst , ant1
+			glcd_printf("normal burst\n");
+			break;
+		case 1 : // double LF burst for user recognition (ant1, ant2)
+			glcd_printf("user recognition\n");
+			break;
+		case 2 : // double LF burst for reliable region check (ant3, ant4)
+			glcd_printf("check reliable region\n");
+			break;
+		case 3 : // all LF burst disable
+			glcd_printf("all operation stop\n");
+			break;
+		case 4 : // return to before state
+			glcd_printf("return to main\n");
+			break;
+		default :
+			break;
+	}
+}
+void printLfSVCMenu( uint8_t menuRow )
+{
+	switch(menuRow)
+	{
+		case 0 :
+			glcd_printf("service start\n");
+			break;
+		case 1 :
+			glcd_printf("undefined\n");
+			break;
+		case 2 :
+			glcd_printf("cancel\n");
+			break;
+		case 3 :
+			glcd_printf("return to main\n");
+			break;
+		default :
+			break;
+	}
+}
+
+void printMenu( uint8_t menuState, uint8_t selMenu )
+{
+	uint8_t i;
+
+	glcd_clear();
+	for(i=0; i<getSelMax(menuState); i++)
+	{
+		glcdGotoChar(0,i);
+
+		if(selMenu == i+1)
+		{
+			printSelArrow();
+		}
+		switch(menuState)
+		{
+			case MENU_MAIN :
+				printMainMenu(i);
+				break;
+			case MENU_LF_TEST :
+				printLFMenu(i);
+				break;
+			case MENU_OPERATION :
+				printLfSVCMenu(i);
+				break;
+			default :
+				break;
+		}
+	}
+}
+

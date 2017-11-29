@@ -1,0 +1,134 @@
+/*
+ * lib_IRBoard.c
+ *
+ *  Created on: 2015. 7. 20.
+ *      Author: minsu
+ */
+
+// standard c library include
+#include <stdio.h>
+#include <sam4e.h>
+#include "sam4e16e.h"
+
+// ubinos library include
+#include "itf_ubinos/itf/bsp.h"
+#include "itf_ubinos/itf/ubinos.h"
+
+// chipset driver include
+#include "spi/spi.h"
+#include "pio/pio.h"
+#include "sam4e16e.h"
+#include "ioport.h"
+#include "sam_gpio/sam_gpio.h"
+
+// new estk driver include
+#include "lib_new_estk_api/itf/new_estk_glcd.h"
+#include "../../../../kernel/driver/lib_new_estk_api/itf/new_estk_ioport_set.h"
+#include "../../../../kernel/porting/lib_sam4e/sam/boards/sam4e_ek/sam4e_ek.h"
+
+#include "../itf/lib_IRBoard.h"
+
+void ir_spi_init(void){
+
+	gpio_configure_pin(IR_CS, IR_CS_FLAGS);
+
+	ioport_set_pin_peripheral_mode(IR_SO,IR_SO_FLAG);
+	ioport_set_pin_peripheral_mode(IR_SI,IR_SI_FLAG);
+	ioport_set_pin_peripheral_mode(IR_SCL,IR_SCL_FLAG);
+
+	spi_enable_clock(SPI_MASTER_BASE);
+	spi_disable(SPI_MASTER_BASE);
+	spi_reset(SPI_MASTER_BASE);
+	spi_set_master_mode(SPI_MASTER_BASE);
+	spi_disable_mode_fault_detect(SPI_MASTER_BASE);
+	spi_disable_loopback(SPI_MASTER_BASE);
+	spi_set_peripheral_chip_select_value(SPI_MASTER_BASE, IR_SPI_CHIP_PCS);
+	spi_set_fixed_peripheral_select(SPI_MASTER_BASE);
+
+	spi_set_transfer_delay(SPI_MASTER_BASE, IR_SPI_CHIP_SEL, DELAY_BEFORE_SPCK, DELAY_BETWEEN_CONS_COM);
+	spi_set_bits_per_transfer(SPI_MASTER_BASE, IR_SPI_CHIP_SEL, SPI_CSR_BITS_8_BIT);
+	spi_set_baudrate_div(SPI_MASTER_BASE, IR_SPI_CHIP_SEL, 0x30);
+	spi_set_clock_polarity(SPI_MASTER_BASE, IR_SPI_CHIP_SEL, IR_SPI_CLK_POLARITY);
+	spi_set_clock_phase(SPI_MASTER_BASE, IR_SPI_CHIP_SEL, IR_SPI_CLK_PHASE);
+
+	spi_enable(SPI_MASTER_BASE);
+
+}
+
+void send_ir_command(int ir_com, int ir_num, int* ir_command, IR* ir){
+	int signal;
+	int fixed_ir_com;
+	uint8_t p_pcs;
+	if(ir_com == IR_TRANS_COMMAND)
+		fixed_ir_com = IR_COMMAND_MASK(ir_com)|ir_num;
+	else
+		fixed_ir_com = IR_COMMAND_MASK(ir_com);
+
+	PIOA->PIO_CODR = PIO_PA12;
+	PIOC->PIO_CODR = PIO_PC19;	// SS pin clear
+	spi_write(SPI_MASTER_BASE,fixed_ir_com,IR_SPI_CHIP_PCS,(SPI->SPI_SR)&SPI_SR_TXEMPTY);
+	task_sleep(50);
+	spi_read(SPI_MASTER_BASE,&signal,&p_pcs);
+
+	PIOA->PIO_SODR = PIO_PC19; // SS pin set
+	PIOA->PIO_SODR = PIO_PA12;
+
+	switch(ir_com){
+		case IR_TRANS_COMMAND :
+		if(signal == IR_END_SIGNAL) *ir_command = IDLE_COMMAND;
+		break;
+
+		case IR_TRANS_ALL_COMMAND :
+		if(signal == IR_END_SIGNAL) *ir_command = IDLE_COMMAND;
+		break;
+
+		case IR_RECEIVE_COMMAND :
+		decode_signal(signal,ir);
+		*ir_command = IDLE_COMMAND;
+		break;
+
+		default :
+		break;
+	}
+}
+
+void decode_signal(int signal,IR* ir){
+	int num, dir, size;
+	static int prev_num, prev_dir, prev_size;
+	num = IR_NUM_MASK(signal);
+	dir = IR_DIR_MASK(signal);
+	size = IR_SIZE_MASK(signal);
+
+	if(( num == 1 ) && ( dir == 4 ) && ( size == 0 ))
+	{
+		num = prev_num;
+		dir = prev_dir;
+		size = prev_size;
+	}
+	ir->robot_num = num;
+	ir->robot_dir = dir;
+	ir->robot_sig_size = size;
+	printf("num : %d, dir = %d, size = %d\r\n", num, dir, size);
+
+	prev_num = num;
+	prev_dir = dir;
+	prev_size = size;
+}
+
+int get_ir_robot_num(IR* ir){
+	return ir->robot_num;
+}
+
+int get_ir_robot_dir(IR* ir){
+	return ir->robot_dir;
+}
+
+int get_ir_robot_size(IR* ir){
+	return ir->robot_sig_size;
+}
+
+void set_ir_command(int ir_com, int ir_num, int* ir_command, int* ir_number){
+	*ir_command = ir_com;
+	*ir_number = ir_num;
+}
+

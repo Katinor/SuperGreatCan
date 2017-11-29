@@ -1,0 +1,32 @@
+/*
+ * lib_smartbelt_protocol.c
+ *
+ *  Created on: 2015. 5. 28.
+ *      Author: geoyun
+ */
+
+#include "../ubiconfig.h"
+
+#include <stdio.h>
+#include <stdint.h>
+#include <sam4e.h>
+
+#include "itf_ubinos/itf/bsp.h"
+#include "itf_ubinos/itf/ubinos.h"
+#include "sysclk.h"
+
+#include "lib_i2c_master/itf/lib_i2c_master.h"
+#include "lib_i2c_master/itf/lib_sam4e16e_board.h"
+#include "lib_ubi_pio/itf/lib_ubi_pio.h"
+
+#include "pio/pio.h"
+
+#include "../itf/lib_smartbelt_profile.h"
+#include "../itf/lib_smartbelt_protocol.h"
+
+
+void smartbelt_protocol_init(void) {
+	ubik_hrtick_enable(0);
+	smartbelt_manager_init();
+	smartbelt_hw_init();
+}

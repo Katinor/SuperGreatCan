@@ -1,0 +1,132 @@
+/*
+ * sora_config.h
+ *
+ *  Created on: 2015. 7. 7.
+ *      Author: jaegeun
+ */
+
+#ifndef APPLICATION_SORA_EXE_SORA_TEST1_HDR_SORA_CONFIG_H_
+#define APPLICATION_SORA_EXE_SORA_TEST1_HDR_SORA_CONFIG_H_
+/* -------------------------------------------------------------------------
+	Constants
+ ------------------------------------------------------------------------- */
+// operation task ref
+#define OP_TASK_NUM		8
+
+// msgq ref
+#define SORA_MSGQSIZE_MAX		16
+#define	SORA_MSGCNT_MAX			10
+
+// in lf sampling task
+#define NUMBER_OF_LF_SAMPLING	3
+
+// in following
+#define CRITERIA_DISTANCE		100
+
+// data which is sent to PAAR watch to distinguish between operations
+#define SORA_MODE_NONE 			0xD0
+#define SORA_MODE_USR_SEARCH 	0xD1
+#define SORA_MODE_CMD_WAIT		0xD2
+#define SORA_MODE_MAIN_OP		0xD3
+#define SORA_MODE_REMOTE		0xD4
+
+// gesture command
+#define GESTURE_MODE_OP_CMD				0xC0
+#define GESTURE_MODE_OP_CMD_SUB_REMOTE	3
+#define GESTURE_MODE_OP_CMD_SUB_FOLLOW	4
+#define GESTURE_MODE_OP_CMD_SUB_LEAD	5
+
+#define GESTURE_MODE_REMOTE				0xC1
+#define GESTURE_MODE_REMOTE_SUB_LEFT	4
+#define GESTURE_MODE_REMOTE_SUB_RIGTH	5
+#define GESTURE_MODE_REMOTE_SUB_FRONT	6
+#define GESTURE_MODE_REMOTE_SUB_BACK	7
+
+#define GESTURE_MODE_CANCEL				0xC2
+#define GESTURE_MODE_CANCEL_SUB_DUMMY	1
+
+// test command
+#define TEST_CMD_SVC_START				0xBB
+#define TEST_CMD_SVC_SUB				0x00
+
+/* -------------------------------------------------------------------------
+	Enumeration
+ ------------------------------------------------------------------------- */
+
+typedef enum _MAIN_OPERATION {
+	OP_IDLE,
+	OP_USER_WAITING,
+	OP_USER_SEARCHING,
+	OP_CMD_WAITING,
+	OP_FOLLOWING,
+	OP_LEADING,
+	OP_REMOTE_CONTROL,
+	OP_EMERGENCY_RC,
+} main_op_t;
+
+typedef enum _MAIN_OP_CMD {
+	MAIN_CMD_NONE,
+	MAIN_CMD_SVC_START,
+	MAIN_CMD_USR_HERE_OK,
+	MAIN_CMD_USR_SEARCH_OK,
+	MAIN_CMD_USR_SEARCH_FAIL,
+	MAIN_CMD_FOLLOWING,
+	MAIN_CMD_LEADING,
+	MAIN_CMD_REMOTE,
+	MAIN_CMD_EMERGENCY_RC_MODE,
+	MAIN_CMD_EXIT_EMERGENCY,
+	MAIN_CMD_CANCEL,
+} main_cmd_t;
+
+enum LF_SENSING_FLAG {
+	LF_SENSING_STOP,
+	LF_SENSING_START,
+};
+
+typedef enum _idx_op_tasks
+{
+	IDX_OP_TASK_WAITING_USR,
+	IDX_OP_TASK_LF_SAMPLING,
+	IDX_OP_TASK_FOLLOWING,
+	IDX_OP_TASK_SEARCHING_USR,
+	IDX_OP_TASK_CMD_WAIT,
+	IDX_OP_TASK_LEADING,
+	IDX_OP_TASK_REMOTE_CONTROL,
+	IDX_OP_TASK_EMERGENCY_RC,
+} op_tasks_idx_t;
+
+/* -------------------------------------------------------------------------
+	STRUCTURES
+ ------------------------------------------------------------------------- */
+typedef struct _op_tasks
+{
+	task_pt ptask;
+	taskfunc_ft func;
+} OP_TASKS;
+
+/* -------------------------------------------------------------------------
+	Global varaibles
+ ------------------------------------------------------------------------- */
+extern const unsigned char cmd_none[];
+extern const unsigned char cmd_svc_start[];
+extern const unsigned char cmd_usr_here_ok[];
+extern const unsigned char cmd_usr_search_ok[];
+extern const unsigned char cmd_search_fail[];
+extern const unsigned char cmd_following[];
+extern const unsigned char cmd_leading[];
+extern const unsigned char cmd_remote[];
+extern const unsigned char cmd_emergency_rc[];
+extern const unsigned char cmd_exit_emergency[];
+extern const unsigned char cmd_cancel[];
+
+/* -------------------------------------------------------------------------
+	Interface
+ ------------------------------------------------------------------------- */
+// mainControl.c interface
+void mainControllerInit( void );	// main controller initialization
+void op_cmd_send(unsigned char *msg);		// main command send function
+void ble_gestureCmd_send(unsigned char *msg);	// gesture msgq
+void usr_isHere_sem_give( void );	// in op usr check, to pass the next op
+void lf_sampling_send(unsigned char * msg);	// lf sampling data send; lf svc -> main controller
+
+#endif /* APPLICATION_SORA_EXE_SORA_TEST1_HDR_SORA_CONFIG_H_ */

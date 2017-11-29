@@ -1,0 +1,175 @@
+/*
+ * lib_ubi_pio.h
+ *
+ *  Created on: 2015. 4. 28.
+ *      Author: geoyun
+ */
+
+#ifndef APPLICATION_LIB_I2C_MASTER_ITF_LIB_ATA5279C_H_
+#define APPLICATION_LIB_I2C_MASTER_ITF_LIB_ATA5279C_H_
+
+
+#include <stdio.h>
+#include <stdint.h>
+
+#include "pio/pio.h"
+#include "ioport.h"
+
+/** USART1 RXD PIN (MISO) definition. */
+#define USART1_MISO_GPIO         (PIO_PA21_IDX)
+#define USART1_MISO_FLAGS        (IOPORT_MODE_MUX_A)
+/** USART1 TXD PIN (MOSI) definition. */
+#define USART1_MOSI_GPIO         (PIO_PA22_IDX)
+#define USART1_MOSI_FLAGS        (IOPORT_MODE_MUX_A)
+/** USART1 SCK PIN definition. */
+#define USART1_SPCK_GPIO         (PIO_PA23_IDX)
+#define USART1_SPCK_FLAGS        (IOPORT_MODE_MUX_A)
+
+//initialize pin I/O for PNIP module(ATA5279 connection, LF, SPI), ChipSelect -> PA3, "SDL_ata5279.h"
+#define ATA5279_nRES		(PIO_PB10_IDX)
+#define ATA5279_nRES_FLAG	(PIO_OUTPUT_1 | PIO_DEFAULT)
+
+#define SPI_ATA5279				(PIO_PB11_IDX)
+#define SPI_ATA5279_FLAGS		(PIO_OUTPUT_0 | PIO_DEFAULT)
+
+// usart configuration. sora dosen't use spi, but usart1 as spi communication
+#define USART_SPI_EXAMPLE                   USART1
+#define USART_SPI_DEVICE_EXAMPLE_ID         1
+#define USART_SPI_EXAMPLE_BAUDRATE          500000//80000
+
+//struct status_block_t
+//{
+//	uint32_t ul_total_block_number;
+//	uint32_t ul_total_command_number;
+//	uint32_t ul_cmd_list[NB_STATUS_CMD];
+//};
+
+#define ATA5279_IRQ				{PIO_PA2, PIOA, ID_PIOA, PIO_INPUT, PIO_PULLUP | PIO_DEBOUNCE | PIO_IT_FALL_EDGE}
+#define ATA5279_IRQ_MASK		PIO_PA2
+#define ATA5279_IRQ_PIO			PIOA
+#define ATA5279_IRQ_ID			ID_PIOA
+#define ATA5279_IRQ_TYPE		PIO_INPUT
+#define ATA5279_IRQ_ATTR		PIO_PULLUP | PIO_DEBOUNCE | PIO_IT_FALL_EDGE
+
+//#define ATA5279_BCNT			{PIO_PA4, PIOA, ID_PIOA, PIO_INPUT, PIO_PULLUP | PIO_DEBOUNCE | PIO_IT_FALL_EDGE}
+//#define ATA5279_BCNT_MASK		PIO_PA4
+//#define ATA5279_BCNT_PIO		PIOA
+//#define ATA5279_BCNT_ID			ID_PIOA
+//#define ATA5279_BCNT_TYPE		PIO_INPUT
+//#define ATA5279_BCNT_ATTR		PIO_PULLUP | PIO_DEBOUNCE | PIO_IT_FALL_EDGE
+#define ATA5279_BCNT			(PIO_PA3_IDX)
+#define ATA5279_BCNT_FLAGS		(PIO_INPUT | PIO_DEFAULT)
+
+#define ATA5279_HIGH_CURRENT_DRIVER		0x00
+#define ATA5279_LOW_CURRENT_DRIVER		0x04
+
+#define ATA5279_CHANNEL_HIGH_A			ATA5279_HIGH_CURRENT_DRIVER | 0x01
+#define ATA5279_CHANNEL_HIGH_B			ATA5279_HIGH_CURRENT_DRIVER | 0x02
+#define ATA5279_CHANNEL_HIGH_C			ATA5279_HIGH_CURRENT_DRIVER | 0x03
+
+#define ATA5279_CHANNEL_LOW_A			ATA5279_LOW_CURRENT_DRIVER | 0x01
+#define ATA5279_CHANNEL_LOW_B			ATA5279_LOW_CURRENT_DRIVER | 0x02
+#define ATA5279_CHANNEL_LOW_C			ATA5279_LOW_CURRENT_DRIVER | 0x03
+
+// select antenna
+#define SELECTANT1          1
+#define SELECTANT2          2
+#define SELECTANT3          3
+#define SELECTANT4          5
+#define SELECTANT5          6
+#define SELECTANT6          7
+
+// tx power
+#define TX_POWER_MAX		18
+#define TX_POWER_HIGH		14
+#define TX_POWER_MIDDLE		10
+#define TX_POWER_LOW		6
+#define TX_POWER_MIN		2
+
+#define LF_DATA_BUFFER_LENGTH		32
+#define LF_DATA_PACKET_MAX_SIZE		7
+
+#define LF_DATA_PACKET_MAX_TIME		6
+
+#define MAXIMUM_DATA_LENGTH_ERROR	-1
+#define EMPTY_DATA_ERROR			-2
+
+//#define ata5279_ChipSelect()	gpio_set_pin_high(SPI_ATA5279)
+//#define ata5279_CS_Release()	gpio_set_pin_low(SPI_ATA5279)
+
+#define BYTE_NUM				8
+#define TWO_BYTE_NUM			16
+
+// pattern id
+#define ATA_LF_PTN_ID			0xAEC9;//0x4BFF;//
+
+// packet length and index definition
+#define ATA_LF_PACKET_LEN		23
+
+#define ATA_LF_PREAMBLE_LEN		6
+#define ATA_LF_PTN_LEN			4
+#define ATA_LF_DATA_LEN			4
+#define ATA_LF_DUMMY_LEN		9
+
+#define IDX_ATA_LF_PTN			6
+#define IDX_ATA_LF_DAT			10
+#define IDX_ATA_LF_DUMMY		14
+
+// packet command definition - mode
+#define LF_CMD_RSSI				0xE0	// normal mode
+#define LF_CMD_BLE_CONN			0xE1	// ble connection req
+#define LF_CMD_BLE_DISCONN		0xE2	// ble disconnection req
+#define LF_CMD_REGION_CHK		0xE3	// reliable region chk only
+#define LF_CMD_RSSI_FOLLOW		0xE4	// following mode
+#define	LF_CMD_RSSI_LEAD		0xE5	// leading mode
+#define LF_CMD_USR_CHK			0xE6	// usr chk
+
+// antenna select for global Ant
+#define ANT_SEL_A	0
+#define ANT_SEL_B	1
+#define ANT_SEL_C	2
+#define ANT_SEL_D	3
+#define ANT_SEL_E	4
+#define ANT_SEL_F	5
+
+// delay define
+#define LF_TASK_DELAY_NORMAL	950
+#define LF_TASK_DELAY_SLOW		1950
+#define LF_TASK_DELAY_FAST		350
+
+// msgq index define
+#define LF_MSGQ_CMD_IDX 		0
+// msgq
+#define LF_MSGQSIZE_MAX			1
+#define LF_MSGCNT_MAX			10
+
+// user existence check burst
+#define LF_USR_CHK_BURST_START	1
+#define LF_USR_CHK_BURST_STOP	0
+
+// LF operation command
+enum _cmd_type{
+	CMD_NONE = 0x00,
+	CMD_LF_NORMAL_TX,
+	CMD_LF_BLE_CONN_REQ,
+	CMD_LF_BLE_DISCONN,
+	CMD_LF_RELIABLE_REGION_CHK,
+	CMD_LF_USR_FOLLOW,
+	CMD_LF_USR_LEAD,
+	CMD_LF_STOP,
+	CMD_LF_USR_CHK_START,
+	CMD_LF_USR_CHK_STOP,
+};
+
+// prototypes for general use
+void ata5279_init( uint8_t antPower );	// need antenna power to initialize
+void ata5279_reset(void);
+void ata5279_disable(void);
+void ata5279_HW_reset(void);
+
+void lfAntennaPowerSet( uint8_t power );
+void send_lf_cmd_msgq(unsigned char * msg);
+void lf_Burst(uint8_t cmd);
+void lfDelaySet(int delay);
+
+#endif /* APPLICATION_LIB_I2C_MASTER_ITF_LIB_ATA5279C_H_ */

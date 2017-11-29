@@ -1,0 +1,106 @@
+/*
+ * lib_timer.c
+ *
+ *  Created on: 2015. 6. 1.
+ *      Author: geoyun
+ */
+#include "sam4e.h"
+#include "../itf/lib_timer.h"
+
+#include "tc/tc.h"
+
+timer_st pTimer = {0,};
+Tc *p_tc;
+uint8_t pTc_channel_index;
+static void _timer_isr(void)
+{
+	if (pTimer.low < 0xFFFFFFFF)
+	{
+		pTimer.low++;
+	}
+	else
+	{
+		pTimer.low = 0;
+		pTimer.high++;
+	}
+}
+
+static void timer_hwinit(uint8_t pTc_index, uint8_t pTc_channel_index_t, uint32_t timer_tc_rc)
+{
+	int r;
+	Tc *p_tc;
+	unsigned int dummy;
+	pTc_channel_index = pTc_channel_index_t;
+	switch (pTc_index) {
+		case TIMER_TC0:
+			p_tc = TC0;
+
+			break;
+		case TIMER_TC1:
+			p_tc = TC1;
+			break;
+
+		case TIMER_TC2:
+			p_tc = TC2;
+			break;
+
+		default:
+			break;
+	}
+	// clock enable
+//	PMC->PMC_PCER0 = 1 << (ID_TC0 + pTc_channel_index);
+	PMC->PMC_PCER0 = 1 << ID_TC3;
+
+	// Counter Clock Disable Commanda
+	p_tc->TC_CHANNEL[pTc_channel_index].TC_CCR = TC_CCR_CLKDIS;
+
+	// Timer Interrupt Disable Command
+	p_tc->TC_CHANNEL[pTc_channel_index].TC_IDR = 0xFFFFFFFF;
+
+	// Clear State Register
+	dummy = p_tc->TC_CHANNEL[pTc_channel_index].TC_SR;
+
+	// Channel MNode (TCLK1 Select(0) and RC Compare Trigger Enable
+	p_tc->TC_CHANNEL[pTc_channel_index].TC_CMR = TC_CMR_TCCLKS_TIMER_CLOCK1 | TC_CMR_CPCTRG;
+
+	// Counter CLock Enable Command
+	p_tc->TC_CHANNEL[pTc_channel_index].TC_CCR = TC_CCR_CLKEN;
+
+	// RC Compare Interrupt Enable
+	p_tc->TC_CHANNEL[pTc_channel_index].TC_IER = TC_IER_CPCS;
+
+	intr_connectisr(TC3_IRQn, _timer_isr, intr_gethighestpriority(), 0);
+
+	PMC->PMC_PCER0 = 1<<ID_PIOA;
+
+	// NVIC INterrupt Enable Command Register
+	NVIC_EnableIRQ(TC3_IRQn);
+
+	// Set Time for about timer_tc_rc
+	p_tc->TC_CHANNEL[pTc_channel_index].TC_RC = timer_tc_rc;
+
+
+}
+
+void timer_init(uint8_t pTc_index, uint8_t pTc_channel_index, uint32_t timer_tc_rc)
+{
+	int r;
+
+	timer_hwinit(pTc_index, pTc_channel_index, timer_tc_rc);
+
+
+}
+
+int timer_start(void)
+{
+	// Start timer
+	p_tc->TC_CHANNEL[pTc_channel_index].TC_CCR = TC_CCR_SWTRG;
+	return 0;
+}
+
+int timer_end(timer_st *pTimer_pt)
+{
+	p_tc->TC_CHANNEL[pTc_channel_index].TC_CCR = TC_CCR_CLKDIS;
+	pTimer_pt->high = pTimer.high;
+	pTimer_pt->low = pTimer.low;
+}

@@ -1,0 +1,87 @@
+/*
+ * lib_IBU.h
+ *
+ *  Created on: 2015. 7. 8.
+ *      Author: jaegeun
+ */
+
+#ifndef APPLICATION_LIB_I2C_MASTER_ITF_LIB_IBU_H_
+#define APPLICATION_LIB_I2C_MASTER_ITF_LIB_IBU_H_
+
+
+#include <stdio.h>
+#include <stdint.h>
+
+/*-------------------------------------------------------------------*/
+/* Constant	                    			     					 */
+/*-------------------------------------------------------------------*/
+
+/* packet structure */
+/* - packet data */
+#define		IBU_UART_STX			0xFE
+#define		IBU_UART_ETX			0xFF
+
+// UART rx data index state
+#define		IBU_RX_DATA_START		0
+
+// UART buffer and packet size
+#define		IBU_PACKET_LENGTH	20
+
+// msgq
+#define IBU_MSGQSIZE_MAX		16
+#define	IBU_MSGCNT_MAX			10
+
+// rx data buffer without header and trailer
+#define RX_DAT_LEN_IDX			0
+#define RX_DAT_CMD_IDX			1
+
+// re wrapping define index
+#define RX_DAT_1ST_ANT_ATT_IDX		2
+#define RX_DAT_1ST_ANT_DIS_LEN_IDX	3
+#define RX_DAT_1ST_ANT_DIS_IDX		4
+
+// ble packet info
+#define IBU_BLE_PACKET_START			0xAA
+#define IBU_BLE_PACKET_PAYLOAD_LEN		0x04
+#define IBU_BLE_PACKET_END				0xF3
+#define IBU_BLE_PACKET_WIDTH			6
+
+/*-------------------------------------------------------------------*/
+/* Enumeration                    			     					 */
+/*-------------------------------------------------------------------*/
+/* - UART packet state */
+enum IBU_UART_RX_STATE
+{
+	IBU_STATE_IDLE,
+	IBU_STATE_STX,
+	IBU_STATE_LEN,
+	IBU_STATE_DATA,
+	IBU_STATE_ETX
+};
+
+enum BLE_CONNECTED
+{
+	IBU_BLE_DISCONNECTED,
+	IBU_BLE_CONNECTED,
+};
+
+typedef enum _ble_tx_packet_idx
+{
+	IBU_BLE_PACKET_START_IDX,
+	IBU_BLE_PACKET_LEN_IDX,
+	IBU_BLE_PACKET_CMD_IDX,
+	IBU_BLE_PACKET_DATA1_IDX,
+	IBU_BLE_PACKET_DATA2_IDX,
+	IBU_BLE_PACKET_END_IDX,
+} ble_tx_idx_t;
+
+void IBU_component_init( void );
+int IBU_uart_puts(char * str, int size);
+void IBU_scanStart( void );
+void IBU_disConnect( void );
+void IBU_BLE_disconnection( void );
+void IBU_sendEmergencyMsg( void );
+void IBU_ble_send_cmd(uint8_t cmd);
+void IBU_send_bleMsg(uint8_t cmd, uint8_t *data);
+
+#endif /* APPLICATION_LIB_I2C_MASTER_ITF_LIB_IBU_H_ */

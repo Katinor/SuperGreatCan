@@ -1,0 +1,36 @@
+/*
+ * lib_speed_configuation.h
+ *
+ *  Created on: 2015. 7. 21.
+ *      Author: Administrator
+ */
+
+#ifndef APPLICATION_SORA_LIB_MOTOR_CONTROLLER_ITF_LIB_SPEED_CONFIGURATION_H_
+#define APPLICATION_SORA_LIB_MOTOR_CONTROLLER_ITF_LIB_SPEED_CONFIGURATION_H_
+
+
+#include <stdio.h>
+#include <stdint.h>
+
+#define LINEAR_MOTION	0
+#define ROTATING_MOTION	1
+
+#define VALID_LENGTH	10
+
+typedef struct{
+	uint8_t cmd;
+
+	//for linear motion
+	int vx;
+	int vy;
+
+	//for rotating motion
+	int angle;
+	int w;
+}SpeedData;
+
+void SpeedData_Integration(SpeedData* sdata, unsigned char* array, uint8_t arraylength);
+
+void SpeedData_parsing(SpeedData* sdata, unsigned char* array, uint8_t arraylength);
+
+#endif /* APPLICATION_SORA_LIB_MOTOR_CONTROLLER_ITF_LIB_SPEED_CONFIGURATION_H_ */

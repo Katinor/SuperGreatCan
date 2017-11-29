@@ -1,0 +1,48 @@
+#ifndef UBICONFIG_H__bsp_armcortexm_sam4eek_
+#define UBICONFIG_H__bsp_armcortexm_sam4eek_
+
+#define UBI_BUILDMODE__DEBUG					0
+#define UBI_BUILDMODE__RELEASE					1
+#define UBI_BUILDMODE							UBI_BUILDMODE__DEBUG
+#define UBI_CPU_TYPE__ARM7TDMI					0
+#define UBI_CPU_TYPE__ARM9						1
+#define UBI_CPU_TYPE__ARM926EJ_S				2
+#define UBI_CPU_TYPE__CORTEX_M3					3
+#define UBI_CPU_TYPE__CORTEX_M4					4
+#define UBI_CPU_TYPE							UBI_CPU_TYPE__CORTEX_M4
+#define UBI_THUMB_MODE							1
+#define UBI_THUMB_INTERWORK						0
+#define UBI_LITTLE_ENDIAN						1
+#define UBI_SUCHECK								1
+#define UBI_SOCHECK								1
+#define UBI_SOCHECK_TYPE						0
+#define UBI_INCLUDE_STDLIB						0
+#define UBI_GNUC								1
+
+#include "cfg/property_prologue.h"
+
+//#define EXCLUDE_HRTICK							0
+//#define EXCLUDE_HRTICK_TICKISR_DELAY_CHECK		1
+
+#include "cfg/property_epilogue.h"
+
+#define UBI_COMPONENT__itf_ubinos
+#define UBI_COMCONFIG__itf_ubinos
+#define UBI_COMPONENT__lib_ubiclib
+#define UBI_COMCONFIG__lib_ubiclib
+#define UBI_COMPONENT__lib_ubiclib_arm
+#define UBI_COMCONFIG__lib_ubiclib_arm
+#define UBI_COMPONENT__lib_ubik
+#define UBI_COMCONFIG__lib_ubik
+#define UBI_COMPONENT__lib_ubik_armcortexm
+#define UBI_COMCONFIG__lib_ubik_armcortexm
+#define UBI_COMPONENT__lib_ubik_armcortexm_sam4eek
+#define UBI_COMCONFIG__lib_ubik_armcortexm_sam4eek
+#define UBI_COMPONENT__lib_ubik_test
+#define UBI_COMCONFIG__lib_ubik_test
+#define UBI_COMPONENT__bsp_armcortexm_sam4eek
+#define UBI_COMCONFIG__bsp_armcortexm_sam4eek__flash
+#define UBI_COMPONENT__exe_custom
+#define UBI_COMCONFIG__exe_custom
+
+#endif /* UBICONFIG_H__bsp_armcortexm_sam4eek_ */

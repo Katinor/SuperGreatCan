@@ -1,0 +1,210 @@
+/*
+ * lib_CMPS10.c
+ *
+ *  Created on: 2015. 7. 20.
+ *      Author: Taemin
+ */
+
+#include <stdio.h>
+#include <sam4e.h>
+#include <math.h>
+
+#include "itf_ubinos/itf/bsp.h"
+#include "itf_ubinos/itf/ubinos.h"
+
+#include "../itf/lib_CMPS10.h"
+
+extern void TWI_ConfigureMaster(Twi *pTwi, uint32_t twck, uint32_t mck){
+    uint32_t ckdiv = 0;
+    uint32_t cldiv;
+    uint8_t ok = 0;
+
+    TRACE_DEBUG("TWI_ConfigureMaster()\n\r");
+    SANITY_CHECK(pTwi);
+
+    /* SVEN: TWI Slave Mode Enabled */
+    pTwi->TWI_CR = TWI_CR_SVEN;
+    /* Reset the TWI*/
+    pTwi->TWI_CR = TWI_CR_SWRST;
+    pTwi->TWI_RHR;
+
+    /* TWI Slave Mode Disabled, TWI Master Mode Disabled. */
+    pTwi->TWI_CR = TWI_CR_SVDIS;
+    pTwi->TWI_CR = TWI_CR_MSDIS;
+
+    /* Set master mode */
+    pTwi->TWI_CR = TWI_CR_MSEN;
+
+    /* Configure clock */
+    while (!ok) {
+        cldiv = ((mck / (2 * twck)) - 3) / power(2, ckdiv);
+        if (cldiv <= 255) {
+            ok = 1;
+        }
+        else {
+            ckdiv++;
+        }
+    }
+    ASSERT(ckdiv < 8, "-F- Cannot find valid TWI clock parameters\n\r");
+    TRACE_DEBUG("Using CKDIV = %u and CLDIV/CHDIV = %u\n\r", ckdiv, cldiv);
+    pTwi->TWI_CWGR = 0;
+    pTwi->TWI_CWGR = (ckdiv << 16) | (cldiv << 8) | cldiv;
+}
+
+extern void TWID_Initialize(Twid *pTwid, Twi *pTwi){
+    TRACE_DEBUG("TWID_Initialize()\n\r");
+    SANITY_CHECK(pTwid);
+    SANITY_CHECK(pTwi);
+
+    /* Initialize driver. */
+    pTwid->pTwi = pTwi;
+    pTwid->pTransfer = 0;
+}
+void TWI_StartRead(Twi *pTwi, uint8_t address, uint32_t iaddress, uint8_t isize){
+    SANITY_CHECK(pTwi);
+    SANITY_CHECK((address & 0x80) == 0);
+    SANITY_CHECK((iaddress & 0xFF000000) == 0);
+    SANITY_CHECK(isize < 4);
+
+    /* Set slave address and number of internal address bytes. */
+    pTwi->TWI_MMR = 0;
+    pTwi->TWI_MMR = (isize << 8) | TWI_MMR_MREAD | (address << 16);
+
+    /* Set internal address bytes */
+    pTwi->TWI_IADR = 0;
+    pTwi->TWI_IADR = iaddress;
+
+    /* Send START condition */
+    pTwi->TWI_CR = TWI_CR_START;
+}
+void TWI_Stop(Twi *pTwi){
+    SANITY_CHECK(pTwi);
+    pTwi->TWI_CR = TWI_CR_STOP;
+}
+
+void TWI_EnableIt(Twi *pTwi, uint32_t sources){
+    SANITY_CHECK(pTwi);
+    SANITY_CHECK((sources & 0xFFFFF088) == 0);
+
+    pTwi->TWI_IER = sources;
+}
+
+extern uint8_t TWID_Read(
+    Twid *pTwid,
+    uint8_t address,
+    uint32_t iaddress,
+    uint8_t isize,
+    uint8_t *pData,
+    uint32_t num,
+    Async *pAsync){
+    Twi *pTwi = pTwid->pTwi;
+    AsyncTwi *pTransfer = (AsyncTwi *) pTwid->pTransfer;
+    uint32_t timeout;
+
+    SANITY_CHECK(pTwid);
+    SANITY_CHECK((address & 0x80) == 0);
+    SANITY_CHECK((iaddress & 0xFF000000) == 0);
+    SANITY_CHECK(isize < 4);
+
+    /* Check that no transfer is already pending*/
+    if (pTransfer) {
+        TRACE_ERROR("TWID_Read: A transfer is already pending\n\r");
+        return TWID_ERROR_BUSY;
+    }
+
+    /* Set STOP signal if only one byte is sent*/
+    if (num == 1) {
+        TWI_Stop(pTwi);
+    }
+
+    /* Asynchronous transfer*/
+    if (pAsync) {
+
+        /* Update the transfer descriptor */
+        pTwid->pTransfer = pAsync;
+        pTransfer = (AsyncTwi *) pAsync;
+        pTransfer->status = ASYNC_STATUS_PENDING;
+        pTransfer->pData = pData;
+        pTransfer->num = num;
+        pTransfer->transferred = 0;
+
+        /* Enable read interrupt and start the transfer */
+        TWI_EnableIt(pTwi, TWI_IER_RXRDY);
+        TWI_StartRead(pTwi, address, iaddress, isize);
+    }
+    /* Synchronous transfer*/
+    else {
+
+        /* Start read*/
+        TWI_StartRead(pTwi, address, iaddress, isize);
+
+        /* Read all bytes, setting STOP before the last byte*/
+        while (num > 0) {
+
+            /* Last byte ?*/
+            if (num == 1) {
+
+                TWI_Stop(pTwi);
+            }
+
+            /* Wait for byte then read and store it*/
+            timeout = 0;
+            while( !TWI_ByteReceived(pTwi) && (++timeout<TWITIMEOUTMAX) );
+            if (timeout == TWITIMEOUTMAX) {
+                TRACE_ERROR("TWID Timeout BR\n\r");
+            }
+            *pData++ = TWI_ReadByte(pTwi);
+            num--;
+        }
+
+        /* Wait for transfer to be complete */
+        timeout = 0;
+        while( !TWI_TransferComplete(pTwi) && (++timeout<TWITIMEOUTMAX) );
+        if (timeout == TWITIMEOUTMAX) {
+            TRACE_ERROR("TWID Timeout TC\n\r");
+        }
+    }
+
+    return 0;
+}
+
+uint8_t TWI_ReadByte(Twi *pTwi){
+    SANITY_CHECK(pTwi);
+
+    return pTwi->TWI_RHR;
+}
+
+uint8_t TWI_TransferComplete(Twi *pTwi){
+	return ((pTwi->TWI_SR & TWI_SR_TXCOMP) == TWI_SR_TXCOMP);
+}
+
+uint8_t TWI_ByteReceived(Twi *pTwi){
+	return ((pTwi->TWI_SR & TWI_SR_RXRDY) == TWI_SR_RXRDY);
+}
+
+void Init_i2c(Twid *twid){
+	int i;
+//	PIO_Configure(pins_twi, PIO_LISTSIZE(pins_twi));
+
+	for( i = 0; i < 2; i++ ){
+		pio_set_peripheral( pins_twi[i].pio, pins_twi[i].type, pins_twi[i].mask );
+	}
+
+	PMC->PMC_PCER0 = 1 << ID_TWI0;
+	TWI_ConfigureMaster( TWI0, TWCK_100K, BOARD_MCK );
+	TWID_Initialize( twid, TWI0 );
+
+	task_sleep(100);
+}
+
+unsigned int power(unsigned int x, unsigned int y)
+{
+    unsigned int result = 1;
+
+    while (y > 0) {
+
+        result *= x;
+        y--;
+    }
+    return result;
+}

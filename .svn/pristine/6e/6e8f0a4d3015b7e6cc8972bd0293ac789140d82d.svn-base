@@ -1,0 +1,80 @@
+/*
+ * lib_smartbelt_protocol.h
+ *
+ *  Created on: 2015. 5. 28.
+ *      Author: geoyun
+ */
+
+#ifndef APPLICATION_SMARTBELT_LIB_SMARTBELT_PROTOCOL_ITF_LIB_SMARTBELT_PROTOCOL_H_
+#define APPLICATION_SMARTBELT_LIB_SMARTBELT_PROTOCOL_ITF_LIB_SMARTBELT_PROTOCOL_H_
+
+#include <stdint.h>
+
+#include "lib_smartbelt_profile.h"
+
+#define SMARTBELT_STATE_IDLE		0xF0
+#define SMARTBELT_STATE_ADD_READY	0xF1
+#define	SMARTBELT_STATE_REQUEST		0xF2
+#define	SMARTBELT_STATE_PLUGIN		0xF3
+#define	SMARTBELT_STATE_ENDOFTRANS	0xF4
+#define SMARTBELT_STATE_PLUGOUT		0xF5
+void smartbelt_sendMessage(uint8_t pId, uint8_t pCmd, uint8_t pLength, uint8_t *buffer);
+
+void smartbelt_sendMsgq(uint8_t *pBuffer);
+
+#define SMARTBELT_MSGQ_SIZE		SMARTBELT_PACKET_MSG_SIZE
+#define	SMARTBELT_MSGQ_COUNT	10
+#define SMARTBELT_APP_ID_NO_READY_QUEUE		0xF0
+void _smartbelt_updateModule(uint8_t pId, uint8_t pModule_location);
+void smartbelt_protocol_init(void);
+
+
+uint8_t smartbelt_getRegisteredModuleIndex_ByModuleID(uint8_t pId);
+
+void smartbelt_hw_init(void);
+void smartbelt_manager_init(void);
+int smartbelt_configModule(uint8_t pId, char* pName,	uint8_t pPriority, msgq_pt pMsgq_name);
+
+#define SMARTBELT_NO_MODULE -1
+uint8_t smartbelt_getModuleIndex_ByModuleLocaiton(uint8_t pPeripheralPin_index);
+
+#define SMARTBELT_TRANS_IDLE	0xF0
+#define	SMARTBELT_TRANS_DATA	0xF1
+#define SMARTBELT_TRANS_CHECK	0xF2
+void smartbelt_sendMessageToTransfer(uint8_t *packet);
+
+#define SMARTBELT_MODULE_HIGH_PRIORITY		3
+#define SMARTBELT_MODULE_MIDDLE_PRIORITY	2
+#define SMARTBELT_MODULE_LOW_PRIORITY		1
+/* module info */
+#define	SMARTBELT_MODULE_NAME_SIZE	20
+
+#define SMARTBELT_MODULE_SWSTATE_IDLE				0x00
+#define SMARTBELT_MODULE_SWSTATE_NOTREGISTERED		0x01
+#define SMARTBELT_MODULE_SWSTATE_REGISTERED			0x02
+struct {
+	uint8_t swState;		/* define registered or unknown module */
+	uint8_t id;
+	uint8_t module_location;
+	uint8_t request_level;
+	char name[SMARTBELT_MODULE_NAME_SIZE];
+	uint8_t priority;
+	uint8_t cmd;
+	uint8_t packet[SMARTBELT_PACKET_MSG_SIZE];
+	msgq_pt msgq_name;
+
+}typedef smartbelt_module_t;
+
+/* It is added ready queue */
+
+/* structure of queue data
+ * */
+struct {
+	uint8_t module_id;
+	uint8_t cmd;
+	uint8_t length;
+	uint8_t data[SMARTBELT_PACKET_DATA_SIZE];
+
+}typedef smartbelt_component_t;
+
+#endif /* APPLICATION_SMARTBELT_LIB_SMARTBELT_PROTOCOL_ITF_LIB_SMARTBELT_PROTOCOL_H_ */

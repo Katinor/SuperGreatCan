@@ -1,0 +1,623 @@
+/*
+ * lib_smartbelt_manager.c
+ *
+ *  Created on: 2015. 6. 2.
+ *      Author: geoyun
+ */
+
+#include "../ubiconfig.h"
+
+#include <stdio.h>
+#include <stdint.h>
+#include <sam4e.h>
+
+#include "itf_ubinos/itf/bsp.h"
+#include "itf_ubinos/itf/ubinos.h"
+#include "sysclk.h"
+
+#include "lib_i2c_master/itf/lib_i2c_master.h"
+#include "lib_i2c_master/itf/lib_sam4e16e_board.h"
+#include "lib_ubi_pio/itf/lib_ubi_pio.h"
+
+#include "pio/pio.h"
+
+#include "../itf/lib_smartbelt_profile.h"
+#include "../itf/lib_smartbelt_protocol.h"
+
+/* external msgq_pt to use app */
+msgq_pt msgManager_msgq_pt;
+
+/* check unplugged module */
+sem_pt checkUnplugged_sem_pt;
+
+/* ready queue */
+#define	SMARTBELT_READY_QUEUE_MAX	0x0F
+static uint8_t current_size = 0;
+static uint8_t current_index = 0;
+static uint8_t new_index = 0;
+
+static smartbelt_component_t _smartbelt_ready_queue[SMARTBELT_READY_QUEUE_MAX];
+
+/* 	need to add module when app_init */
+#define SMARTBELT_MODULE_ARRAY_MAX	10
+static int smartbelt_module_array_size = 0;
+static smartbelt_module_t _smartbelt_module_array[SMARTBELT_MODULE_ARRAY_MAX] =
+		{ 0, };
+static smartbelt_module_t _smartbelt_unknown_module_array[SMARTBELT_MODULE_COUNT] =
+		{ 0, };
+/* Declare */
+static void smartbelt_setUnknownModule(uint8_t pPeripheral_index);
+static uint8_t smartbelt_getModuleID(uint8_t pModuleLocation);
+static uint8_t smartbelt_getModuleIndex(uint8_t pModuleID);
+
+//static void _smartbelt_updateModule(uint8_t pId, uint8_t pModule_location);
+
+static int _smartbelt_readyModule(uint8_t pId, uint8_t *pPacket);
+
+static int _smartbelt_start_transfer(void);
+
+/* ENQUEUE */
+/* parameter : module ID and unknown module info
+ * return : module ID ( registered module and unknown module)
+ * */
+static int smartbelt_add_ready_queue(uint8_t pId, uint8_t pCmd, uint8_t pLength,
+		uint8_t *pBuffer) {
+	int r;
+	uint8_t moduleindex;
+	/* if there is peripheral module information */
+	/* if queue is not full*/
+	/* Unknown module */
+
+#if TEST_PRINT_MSG
+	printf("smartbelt_add_ready_queue\r\n");
+#endif
+	moduleindex = smartbelt_getModuleIndex(pId);
+
+	if (SMARTBELT_MODULE_SWSTATE_REGISTERED
+			== _smartbelt_module_array[moduleindex].swState) {
+		_smartbelt_ready_queue[new_index].module_id = pId;
+		_smartbelt_ready_queue[new_index].cmd = pCmd;
+		_smartbelt_ready_queue[new_index].length = pLength;
+		memcpy(_smartbelt_ready_queue[new_index].data, pBuffer,
+		SMARTBELT_PACKET_DATA_SIZE);
+		new_index = (new_index + 1) & SMARTBELT_READY_QUEUE_MAX;
+		current_size++;
+		r = 0;
+	} else {
+		if (SMARTBELT_UNKNOWN_PERIPHERAL0_ID
+				== (pId & SMARTBELT_UNKNOWN_PERIPHERAL0_ID)) {
+			_smartbelt_ready_queue[new_index].module_id = pId;
+			_smartbelt_ready_queue[new_index].cmd = pCmd;
+			_smartbelt_ready_queue[new_index].length = pLength;
+			memcpy(_smartbelt_ready_queue[new_index].data, pBuffer,
+			SMARTBELT_PACKET_DATA_SIZE);
+			new_index = (new_index + 1) & SMARTBELT_READY_QUEUE_MAX;
+			current_size++;
+			r = 0;
+
+		} else
+			r = -1;
+	}
+	return r;
+}
+
+/* return Peripheral module id of well-known and unknown peripheral module */
+static void smartbelt_getRreadyModuleID(uint8_t *pID, uint8_t *pCurrent_index) {
+	uint16_t r;
+#if TEST_PRINT_MSG
+	printf("smartbelt_getReadyModuleID\r\n");
+#endif
+	if (0 != current_size) {
+		/* Select unknown or well-known peripheral module */
+		*pID = _smartbelt_ready_queue[current_index].module_id;
+		*pCurrent_index = current_index;
+
+		current_index = (current_index + 1) & SMARTBELT_READY_QUEUE_MAX;
+		current_size--;
+
+	} else
+		*pID = SMARTBELT_APP_ID_NO_READY_QUEUE;
+
+}
+
+static void smartbelt_manager_task(void) {
+	int r;
+	uint8_t msgfromApp_buffer[SMARTBELT_PACKET_MSG_SIZE] = { 0, };
+	uint8_t data_buffer[SMARTBELT_PACKET_DATA_SIZE] = { 0, };
+	uint8_t module_index = 0;
+	uint8_t module_pid = 0;
+	uint8_t module_cmd = 0;
+	uint8_t module_length = 0;
+	static uint8_t transferTaskState = 0;
+
+	/* to find request pin */
+	uint32_t req_pin_state;
+
+	for (;;) {
+		r = msgq_receive(msgManager_msgq_pt, msgfromApp_buffer);
+		if (0 != r) {
+			logme("fail at msgq_receive\r\n");
+		}
+#if TEST_PRINT_MSG
+		printf("start smartbelt_manager_task\r\n");
+#endif
+		switch (msgfromApp_buffer[SMARTBELT_PACKET_STATE_INDEX]) {
+		case SMARTBELT_STATE_ADD_READY:
+#if TEST_PRINT_MSG
+			printf("RDY\r\n");
+#endif
+			/* analyze packet */
+			/* find module */
+
+			module_pid = msgfromApp_buffer[SMARTBELT_PACKET_ID_INDEX];
+			module_cmd = msgfromApp_buffer[SMARTBELT_PACKET_CMD_INDEX];
+			module_length = msgfromApp_buffer[SMARTBELT_PACKET_LENGH_INDEX];
+
+			r = smartbelt_add_ready_queue(
+					msgfromApp_buffer[SMARTBELT_PACKET_ID_INDEX],
+					msgfromApp_buffer[SMARTBELT_PACKET_CMD_INDEX],
+					msgfromApp_buffer[SMARTBELT_PACKET_LENGH_INDEX],
+					&msgfromApp_buffer[SMARTBELT_PACKET_DATA0_INDEX]);
+			if (0 != r) {
+				logme("no module \r\n");
+			}
+
+			break;
+
+		case SMARTBELT_STATE_REQUEST:
+#if TEST_PRINT_MSG
+			printf("REQ\r\n");
+#endif
+			/* receive request pin state */
+			memcpy(&req_pin_state,
+					&msgfromApp_buffer[SMARTBELT_PACKET_DATA0_INDEX],
+					msgfromApp_buffer[SMARTBELT_PACKET_LENGH_INDEX]);
+			/*  Do not use case state or like it,
+			 * because, request pin can be nested.
+			 * */
+			if (!(req_pin_state & SMARTBELT_REQUEST_PIN0_MASK)) {
+				/* find module, If there is no module, enter next if loop. */
+				module_pid = smartbelt_getModuleID(
+				SMARTBELT_PERIPHERAL_PIN0_INDEX);
+				if (SMARTBELT_UNKNOWN_PERIPHERAL0_ID
+						== (module_pid & SMARTBELT_UNKNOWN_PERIPHERAL0_ID)) {
+					module_index = smartbelt_getModuleIndex(module_pid);
+					r = smartbelt_add_ready_queue(
+							_smartbelt_unknown_module_array[module_index].id,
+							_smartbelt_unknown_module_array[module_index].cmd,
+							0,
+							NULL);
+				}
+			}
+			if (!(req_pin_state & SMARTBELT_REQUEST_PIN1_MASK)) {
+				module_pid = smartbelt_getModuleID(
+				SMARTBELT_PERIPHERAL_PIN1_INDEX);
+				if (SMARTBELT_UNKNOWN_PERIPHERAL0_ID
+						== (module_pid & SMARTBELT_UNKNOWN_PERIPHERAL0_ID)) {
+					module_index = smartbelt_getModuleIndex(module_pid);
+					r = smartbelt_add_ready_queue(
+							_smartbelt_unknown_module_array[module_index].id,
+							_smartbelt_unknown_module_array[module_index].cmd,
+							0,
+							NULL);
+				}
+			}
+			if (!(req_pin_state & SMARTBELT_REQUEST_PIN2_MASK)) {
+				module_pid = smartbelt_getModuleID(
+				SMARTBELT_PERIPHERAL_PIN2_INDEX);
+				if (SMARTBELT_UNKNOWN_PERIPHERAL0_ID
+						== (module_pid & SMARTBELT_UNKNOWN_PERIPHERAL0_ID)) {
+					module_index = smartbelt_getModuleIndex(module_pid);
+					r = smartbelt_add_ready_queue(
+							_smartbelt_unknown_module_array[module_index].id,
+							_smartbelt_unknown_module_array[module_index].cmd,
+							0,
+							NULL);
+				}
+			}
+			if (!(req_pin_state & SMARTBELT_REQUEST_PIN3_MASK)) {
+				module_pid = smartbelt_getModuleID(
+				SMARTBELT_PERIPHERAL_PIN3_INDEX);
+				if (SMARTBELT_UNKNOWN_PERIPHERAL0_ID
+						== (module_pid & SMARTBELT_UNKNOWN_PERIPHERAL0_ID)) {
+					module_index = smartbelt_getModuleIndex(module_pid);
+					r = smartbelt_add_ready_queue(
+							_smartbelt_unknown_module_array[module_index].id,
+							_smartbelt_unknown_module_array[module_index].cmd,
+							0,
+							NULL);
+				}
+			}
+			break;
+		case SMARTBELT_STATE_PLUGIN:
+#if TEST_PRINT_MSG
+			printf("PLUGIN\r\n");
+#endif
+
+			_smartbelt_updateModule(
+					msgfromApp_buffer[SMARTBELT_PACKET_ID_INDEX],
+					msgfromApp_buffer[SMARTBELT_PACKET_LOCATION]);
+			break;
+		case SMARTBELT_STATE_ENDOFTRANS:
+#if TEST_PRINT_MSG
+			printf("ENDTRANS\r\n");
+#endif
+
+			module_index = smartbelt_getModuleIndex(
+					msgfromApp_buffer[SMARTBELT_PACKET_ID_INDEX]);
+			memcpy(data_buffer,
+					&msgfromApp_buffer[SMARTBELT_PACKET_DATA0_INDEX],
+					SMARTBELT_PACKET_DATA_SIZE);
+			msgq_send(_smartbelt_module_array[module_index].msgq_name,
+					data_buffer);
+			break;
+		case SMARTBELT_STATE_PLUGOUT:
+#if TEST_PRINT_MSG
+			printf("PLUGOUT\r\n");
+#endif
+			module_pid = smartbelt_getModuleID(
+					msgfromApp_buffer[SMARTBELT_PACKET_LOCATION]);
+			_smartbelt_plugout(module_pid);
+			break;
+		default:
+			break;
+		}
+		_smartbelt_start_transfer();
+	}
+}
+
+static int _smartbelt_start_transfer(void) {
+	int r;
+	uint8_t _packet_buffer[SMARTBELT_PACKET_MSG_SIZE] = { SMARTBELT_TRANS_DATA,
+			0, };
+	uint8_t module_pid;
+	uint8_t module_index;
+	uint8_t queue_index;
+
+#if TEST_PRINT_MSG
+	printf("_smartbelt_start_transfer\r\n");
+#endif
+
+	/* check remained ready queue */
+	smartbelt_getRreadyModuleID(&module_pid, &queue_index);
+	_packet_buffer[SMARTBELT_PACKET_ID_INDEX] = module_pid;
+
+	if (SMARTBELT_APP_ID_NO_READY_QUEUE != module_pid) {
+		/* 	if there are some app modules in ready queue, run transfer task*/
+
+		_packet_buffer[SMARTBELT_PACKET_ID_INDEX] =
+				_smartbelt_ready_queue[queue_index].module_id;
+		_packet_buffer[SMARTBELT_PACKET_CMD_INDEX] =
+				_smartbelt_ready_queue[queue_index].cmd;
+		_packet_buffer[SMARTBELT_PACKET_LENGH_INDEX] =
+				_smartbelt_ready_queue[queue_index].length;
+		memcpy(&_packet_buffer[SMARTBELT_PACKET_DATA0_INDEX],
+				_smartbelt_ready_queue[queue_index].data,
+				SMARTBELT_PACKET_DATA_SIZE);
+
+		smartbelt_sendMessageToTransfer(_packet_buffer);
+		r = 0;
+	} else {
+		r = -1;
+	}
+
+	return r;
+}
+
+/* check unpluged module per 1s */
+static void checkUnplugTask(void) {
+	int r;
+	int i;
+
+	uint8_t _plag = 0;
+
+	uint8_t _swState;
+	uint8_t _module_location;
+	uint8_t _buffer[SMARTBELT_PACKET_MSG_SIZE] = { 0, };
+
+	for (;;) {
+		r = sem_take(checkUnplugged_sem_pt);
+#if TEST_PRINT_MSG
+		printf("start checkUnplugTask\r\n");
+#endif
+		for (;;) {
+			printf("check\r\n");
+			for (i = 0; i < SMARTBELT_MODULE_ARRAY_MAX; i++) {
+				_swState = _smartbelt_module_array[i].swState;
+				if (_swState == SMARTBELT_MODULE_SWSTATE_REGISTERED) {
+					_module_location =
+							_smartbelt_module_array[i].module_location;
+					r = smartbelt_checkPeripheralModule(_module_location);
+
+					if (0 != r) {
+						_buffer[SMARTBELT_PACKET_STATE_INDEX] =
+						SMARTBELT_STATE_PLUGOUT;
+						_buffer[SMARTBELT_PACKET_LOCATION] = _module_location;
+						smartbelt_sendMsgq(_buffer);
+						_plag = _plag | 0;
+						printf("ck_plugout : %d\r\n", _module_location);
+					} else {
+						_plag = _plag | 1;
+						printf("test : %d\r\n", _module_location);
+					}
+				}
+			}
+
+			if (0 == _plag) {
+				break;
+			}
+			_plag = 0;
+			task_sleep(1000);
+		}
+
+	}
+}
+
+/* unknown module init*/
+static void _smartbelt_configUnknownModule(void) {
+
+	int i = 0;
+
+	uint8_t _smartbeltPeripheralIDArray[SMARTBELT_MODULE_COUNT] = {
+	SMARTBELT_UNKNOWN_PERIPHERAL0_ID, SMARTBELT_UNKNOWN_PERIPHERAL1_ID,
+	SMARTBELT_UNKNOWN_PERIPHERAL2_ID, SMARTBELT_UNKNOWN_PERIPHERAL3_ID };
+
+	uint8_t _smartbeltPeripheralLocationArray[SMARTBELT_MODULE_COUNT] = {
+	SMARTBELT_PERIPHERAL_PIN0_INDEX, SMARTBELT_PERIPHERAL_PIN1_INDEX,
+	SMARTBELT_PERIPHERAL_PIN2_INDEX, SMARTBELT_PERIPHERAL_PIN3_INDEX };
+
+	uint8_t _whoareyou_packet[SMARTBELT_PACKET_MSG_SIZE] = { 0xA1, 0x12, 0xA1,
+			0x00, };
+
+#if TEST_PRINT_MSG
+	printf("_smartbelt_configUnknownModule\r\n");
+#endif
+
+	for (i = 0; i < SMARTBELT_MODULE_COUNT; i++) {
+		_smartbelt_unknown_module_array[i].swState =
+		SMARTBELT_MODULE_SWSTATE_REGISTERED;
+		_smartbelt_unknown_module_array[i].id = _smartbeltPeripheralIDArray[i];
+		_smartbelt_unknown_module_array[i].module_location =
+				_smartbeltPeripheralLocationArray[i];
+		_smartbelt_unknown_module_array[i].priority =
+		SMARTBELT_MODULE_HIGH_PRIORITY;
+		memcpy(_smartbelt_unknown_module_array[i].packet, _whoareyou_packet,
+		SMARTBELT_PACKET_MSG_SIZE);
+		_smartbelt_unknown_module_array[i].cmd = SMARTBELT_CMD_WHOAREYOU;
+	}
+}
+
+/* do not change parameter */
+/* need to guarantee about unique value of module id and module location */
+int smartbelt_configModule(uint8_t pId, char* pName, uint8_t pPriority,
+		msgq_pt pMsgq_name) {
+	int r;
+	/**/
+	smartbelt_module_t pModule;
+
+#if TEST_PRINT_MSG
+	printf("smartbelt_configModule\r\n");
+#endif
+
+	pModule.id = pId;
+	memcpy(pModule.name, pName, SMARTBELT_MODULE_NAME_SIZE);
+
+	pModule.swState = SMARTBELT_MODULE_SWSTATE_NOTREGISTERED;
+	pModule.priority = pPriority;
+	pModule.msgq_name = pMsgq_name;
+	/* test */
+	pModule.module_location = -1;
+	if (smartbelt_module_array_size < SMARTBELT_MODULE_ARRAY_MAX) {
+		_smartbelt_module_array[smartbelt_module_array_size] = pModule;
+		smartbelt_module_array_size++;
+		r = E__SUCCESS;
+	} else
+		r = E__FAIL;
+	return r;
+}
+
+/* register module */
+void _smartbelt_updateModule(uint8_t pId, uint8_t pModule_location) {
+	uint8_t _moduleindex;
+
+#if TEST_PRINT_MSG
+	printf("_smartbelt_updateModule\r\n");
+#endif
+	_moduleindex = smartbelt_getModuleIndex(pId);
+	_smartbelt_module_array[_moduleindex].module_location = pModule_location;
+	_smartbelt_module_array[_moduleindex].swState =
+	SMARTBELT_MODULE_SWSTATE_REGISTERED;
+
+	/* start to check unplugged module */
+	sem_give(checkUnplugged_sem_pt);
+}
+
+void _smartbelt_plugout(uint8_t pId) {
+	uint8_t _moduleindex;
+#if TEST_PRINT_MSG
+	printf("_smartbelt_plugout\r\n");
+#endif
+	_moduleindex = smartbelt_getModuleIndex(pId);
+	_smartbelt_module_array[_moduleindex].module_location = 0xFF;
+	_smartbelt_module_array[_moduleindex].swState =
+	SMARTBELT_MODULE_SWSTATE_NOTREGISTERED;
+}
+
+void smartbelt_manager_init(void) {
+	int r;
+
+	r = task_create(NULL, smartbelt_manager_task, NULL,
+			task_gethighestpriority() - 2, 256, "sb_manager");
+	if (0 != r) {
+		logme("fail at task_create\r\n");
+	}
+
+	r = task_create(NULL, checkUnplugTask, NULL, task_gethighestpriority() - 1,
+			256, "unplugged");
+	if (0 != r) {
+		logme("fail at task_create\r\n");
+	}
+
+	r = msgq_create(&msgManager_msgq_pt, SMARTBELT_PACKET_MSG_SIZE,
+	SMARTBELT_MSGQ_COUNT);
+	if (0 != r) {
+		logme("fail at msgq_create\r\n");
+	}
+
+	r = sem_create(&checkUnplugged_sem_pt);
+	if (0 != r) {
+		logme("fail at sem_create\r\n");
+	}
+
+	_smartbelt_configUnknownModule();
+	ubi_pio_output_config(PORTD, 31, 1, 0);
+}
+
+/* can be collision without doing plug out process */
+static uint8_t smartbelt_getModuleID(uint8_t pModuleLocation) {
+	int i = 0;
+	uint8_t r = 0xFF;
+
+#if TEST_PRINT_MSG
+	printf("smartbelt_getModuleID\r\n");
+#endif
+
+	for (i = 0; i < SMARTBELT_MODULE_COUNT; i++) {
+		if (_smartbelt_module_array[i].module_location == pModuleLocation) {
+			r = _smartbelt_module_array[i].id;
+		}
+	}
+	/* If can not find module, There is no registered module */
+	if (0xFF == r) {
+		for (i = 0; i < SMARTBELT_MODULE_COUNT; i++) {
+			if (_smartbelt_unknown_module_array[i].module_location
+					== pModuleLocation) {
+				r = _smartbelt_unknown_module_array[i].id;
+#if TEST_PRINT_MSG
+				printf("UNKNOWN_MODULE : %d\r\n", i);
+#endif
+			}
+		}
+	}
+	return r;
+}
+
+static uint8_t smartbelt_getModuleIndex(uint8_t pModuleID) {
+	uint8_t rModuleIndex = -1;
+	/* test */
+
+	uint8_t test_plag = 0;
+
+	/* test */
+	int i = 0;
+
+#if TEST_PRINT_MSG
+	printf("smartbelt_getModuleIndex\r\n");
+#endif
+
+	/* registered module */
+	if (SMARTBELT_UNKNOWN_PERIPHERAL0_ID
+			!= (pModuleID & SMARTBELT_UNKNOWN_PERIPHERAL0_ID)) {
+		for (i = 0; i < SMARTBELT_MODULE_COUNT; i++) {
+			if (pModuleID == _smartbelt_module_array[i].id) {
+				rModuleIndex = i;
+				test_plag = 1;
+			}
+		}
+	}
+	/* unknown module */
+	else {
+		for (i = 0; i < SMARTBELT_MODULE_COUNT; i++) {
+			if (pModuleID == _smartbelt_unknown_module_array[i].id) {
+				rModuleIndex = i;
+			}
+		}
+	}
+
+	if (test_plag == 0)
+	{
+		printf("can't find registered module error\r\n");
+	}
+
+	return rModuleIndex;
+}
+
+void smartbelt_sendMsgq(uint8_t *pBuffer) {
+#if TEST_PRINT_MSG
+	printf("smartbelt_sendMsgq\r\n");
+#endif
+	msgq_send(msgManager_msgq_pt, pBuffer);
+}
+
+void smartbelt_sendMessage(uint8_t pId, uint8_t pCmd, uint8_t pLength,
+		uint8_t *buffer) {
+
+	uint8_t sendbuffer[SMARTBELT_PACKET_MSG_SIZE] = { 0, };
+
+#if TEST_PRINT_MSG
+	printf("smartbelt_sendMessage\r\n");
+#endif
+
+	sendbuffer[SMARTBELT_PACKET_STATE_INDEX] = SMARTBELT_STATE_ADD_READY;
+	sendbuffer[SMARTBELT_PACKET_ID_INDEX] = pId;
+	sendbuffer[SMARTBELT_PACKET_CMD_INDEX] = pCmd;
+	sendbuffer[SMARTBELT_PACKET_LENGH_INDEX] = pLength;
+
+	memcpy(&sendbuffer[SMARTBELT_PACKET_DATA0_INDEX], buffer,
+	SMARTBELT_PACKET_DATA_SIZE);
+
+	msgq_send(msgManager_msgq_pt, sendbuffer);
+}
+
+uint8_t smartbelt_getModuleLocation(uint8_t pModuleID) {
+	uint8_t rModule_location;
+	uint8_t _module_index;
+
+#if TEST_PRINT_MSG
+	printf("smartbelt_getModuleLocation\r\n");
+#endif
+
+	_module_index = smartbelt_getModuleIndex(pModuleID);
+	if (SMARTBELT_UNKNOWN_PERIPHERAL0_ID != (pModuleID & SMARTBELT_UNKNOWN_PERIPHERAL0_ID)) {
+		rModule_location =
+				_smartbelt_module_array[_module_index].module_location;
+		printf("found registered module\r\n");
+	} else {
+		rModule_location =
+				_smartbelt_unknown_module_array[_module_index].module_location;
+		printf("unknown module\r\n");
+	}
+	printf("ModuleID : %x\r\n", pModuleID);
+	printf("Module_location : %d\r\n", rModule_location);
+	printf("Module index : %d\r\n", _module_index);
+
+	return rModule_location;
+}
+
+/*********************************************************/
+/* test ************************/
+void smartbelt_showPinstate(uint32_t pState) {
+	int i = 0;
+#define	ONEMASK		0x01
+	uint8_t req_pin_state_array[32] = { 0, };
+	uint32_t req_pin_state;
+
+#if TEST_PRINT_MSG
+	printf("smartbelt_showPinstate\r\n");
+#endif
+
+	for (i = 0; i < 32; i++) {
+		req_pin_state_array[i] = (uint8_t) (req_pin_state & ONEMASK);
+		req_pin_state = req_pin_state >> 1;
+	}
+	printf("req_pin_state : %x\r\n", req_pin_state);
+	printf("req_pin_binary : ");
+	for (i = 0; i < 32; i++) {
+		printf("%d", req_pin_state_array[i]);
+		if (i % 4 == 3)
+			printf(" | ");
+	}
+	printf("\r\n");
+	printf("receive wake up signal \r\n");
+}
+

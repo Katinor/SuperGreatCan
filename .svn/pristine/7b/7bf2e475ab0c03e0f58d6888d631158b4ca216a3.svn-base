@@ -1,0 +1,38 @@
+#include config_helloworld_armclassic_sam7xek_debug.mk
+#include config_helloworld_armcortexm_sam3sek_debug.mk
+#include config_helloworld_armcortexm_sam4sek2_debug.mk
+
+#include makefile_helloworld.mk
+
+#include config_ubik_tester_armclassic_sam7xek_debug.mk
+#include config_ubik_tester_armcortexm_sam3sek_debug.mk
+#include config_ubik_tester_armcortexm_sam4sek2_debug.mk
+#include config_ubik_tester_armcortexm_sam4eek_debug.mk
+
+
+
+
+#include config_i2c_master_armcortexm_sam4eek_debug.mk
+#include makefile_exe_i2c_master.mk
+
+#include config_float_armcortexm_sam4eek_debug.mk
+#include makefile_float.mk
+
+#include config_notice_and_i2c_armcortexm_sam4eek_debug.mk
+#include makefile_notice_and_i2c.mk
+
+
+#include config_smartbelt_armcortexm_sam4eek_debug.mk
+#include makefile_smartbelt.mk
+
+#include config_hrtick_armcortexm_sam4eek_debug.mk
+#include makefile_hrtick.mk
+
+#include config_testProject_armcortexm_sam4eek_debug.mk
+#include makefile_testProject.mk
+
+include config_sora_test1_armcortexm_sam4eek_debug.mk
+include makefile_sora_test1.mk
+
+#include config_floatTest_armcortexm_sam4eek_debug.mk
+#include makefile_floatTest.mk

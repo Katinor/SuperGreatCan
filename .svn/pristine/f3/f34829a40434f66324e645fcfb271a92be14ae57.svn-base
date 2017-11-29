@@ -1,0 +1,248 @@
+/*
+ Copyright (C) 2009 Sung Ho Park
+ Contact: ubinos.org@gmail.com
+
+ This file is part of the exe_helloworld component of the Ubinos.
+
+ GNU General Public License Usage
+ This file may be used under the terms of the GNU
+ General Public License version 3.0 as published by the Free Software
+ Foundation and appearing in the file license_gpl3.txt included in the
+ packaging of this file. Please review the following information to
+ ensure the GNU General Public License version 3.0 requirements will be
+ met: http://www.gnu.org/copyleft/gpl.html.
+
+ GNU Lesser General Public License Usage
+ Alternatively, this file may be used under the terms of the GNU Lesser
+ General Public License version 2.1 as published by the Free Software
+ Foundation and appearing in the file license_lgpl.txt included in the
+ packaging of this file. Please review the following information to
+ ensure the GNU Lesser General Public License version 2.1 requirements
+ will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+
+ Commercial Usage
+ Alternatively, licensees holding valid commercial licenses may
+ use this file in accordance with the commercial license agreement
+ provided with the software or, alternatively, in accordance with the
+ terms contained in a written agreement between you and rightful owner.
+ */
+
+#include "../ubiconfig.h"
+
+#include <stdio.h>
+
+#include "itf_ubinos/itf/bsp.h"
+#include "itf_ubinos/itf/ubinos.h"
+
+#include "../../lib_smartbelt_protocol/itf/lib_smartbelt_protocol.h"
+#include "../../lib_smartbelt_protocol/itf/lib_smartbelt_profile.h"
+
+#include "pio/pio.h"
+#include "lib_ubi_pio/itf/lib_ubi_pio.h"
+
+/* module connection test */
+static sem_pt module_test_sem_pt;
+
+/* button */
+#define BUTTON_PORT			PORTA
+#define	BUTTON_RESET		1
+#define	BUTTON_SHOW			2
+#define BUTTON_RESULT		3
+#define	BUTTON_TEST_0		19
+#define	BUTTON_TEST_1		20
+
+/* button id : 0x11 */
+/* peripheral module i2c address : 0x12 */
+/* button name : buttonapp */
+/* priority : HIGH( == 2) */
+/* need to set information */
+
+#define APP_BUTTON_TEST_READ_CMD			0xC0
+
+#define	APP_BUTTON_TEST_0_ID				0xA1
+#define	APP_BUTTON_TEST_0_PRIORITY			3
+
+#define	APP_BUTTON_TEST_1_ID				0xA2
+#define	APP_BUTTON_TEST_1_PRIORITY			3
+
+#define BUTTON_BUFFER_SIZE	10
+#define	BUTTON_BUFFER_COUNT	10
+msgq_pt button_msgq_pt;
+
+static void button_handler(uint32_t id, uint32_t mask) {
+	uint8_t packet_buffer[BUTTON_BUFFER_SIZE] = { 0, };
+
+	/* tampbp3 */
+	if (mask == (1 << BUTTON_TEST_0)) {
+		packet_buffer[1] = ubi_pio_getPin(BUTTON_PORT, BUTTON_TEST_0,
+		UBI_PIO_INPUT);
+		packet_buffer[0] = BUTTON_TEST_0;
+
+	}
+	/* wakubp2 */
+	else if (mask == (1 << BUTTON_TEST_1)) {
+		packet_buffer[1] = ubi_pio_getPin(BUTTON_PORT, BUTTON_TEST_1,
+		UBI_PIO_INPUT);
+		packet_buffer[0] = BUTTON_TEST_1;
+	}
+
+	/* scroll down */
+	else if (mask == (1 << BUTTON_SHOW)) {
+		packet_buffer[1] = ubi_pio_getPin(BUTTON_PORT, BUTTON_SHOW,
+		UBI_PIO_INPUT);
+		packet_buffer[0] = BUTTON_SHOW;
+	}
+	/* scroll up*/
+	else if (mask == (1 << BUTTON_RESET)) {
+		packet_buffer[1] = ubi_pio_getPin(BUTTON_PORT, BUTTON_RESET,
+		UBI_PIO_INPUT);
+		packet_buffer[0] = BUTTON_RESET;
+		_processor_reset();
+	}
+	msgq_clear(button_msgq_pt);
+	msgq_send(button_msgq_pt, packet_buffer);
+}
+
+#define	TEST_ATTR_RISE		(PIO_PULLUP | PIO_DEBOUNCE | PIO_IT_RISE_EDGE)
+#define	TEST_ATTR_FALL		(PIO_PULLUP | PIO_DEBOUNCE | PIO_IT_FALL_EDGE)
+#define TIMEOUT	1000
+static void test_function(void) {
+	int r;
+	int i;
+	uint8_t packet_buffer[BUTTON_BUFFER_SIZE] = { 0, };
+
+	uint8_t message[SMARTBELT_PACKET_DATA_SIZE] = { 0xb1, 0xb2, 0xb3, 0xb4,
+			0xb5, 0xb6, 0xb7, 0xb8 };
+	for (;;) {
+		r = msgq_receive(button_msgq_pt, packet_buffer);
+		if (0 != r) {
+			logme("fail at msgq_receive\r\n");
+		}
+		switch (packet_buffer[0]) {
+		case BUTTON_TEST_0:
+//			while(1)
+//			{
+//				smartbelt_sendMessage(APP_BUTTON_TEST_0_ID, SMARTBELT_CMD_READ, 8,
+//					message);
+//			task_sleep(2000);
+//			}
+			sem_give(module_test_sem_pt);
+
+			break;
+		case BUTTON_TEST_1:
+			smartbelt_sendMessage(APP_BUTTON_TEST_1_ID, SMARTBELT_CMD_READ, 8,
+					message);
+			break;
+		case BUTTON_SHOW:
+			printf("*************************************\r\n");
+			printf("peripheral pin 0 : %d\r\n", ubi_pio_getPin(PORTC, 11, 1));
+			printf("peripheral pin 1 : %d\r\n", ubi_pio_getPin(PORTC, 13, 1));
+			printf("peripheral pin 2 : %d\r\n", ubi_pio_getPin(PORTC, 14, 1));
+			printf("peripheral pin 3 : %d\r\n", ubi_pio_getPin(PORTC, 15, 1));
+			printf("ACK pin 0 : %d\r\n",
+					ubi_pio_getPin(SMARTBELT_ACK_PORT_INDEX,
+					SMARTBELT_ACK_PIN_INDEX, UBI_PIO_INPUT));
+			printf("request pin 0 : %d\r\n",
+					ubi_pio_getPin(SMARTBELT_REQUEST_PORT_INDEX,
+					SMARTBELT_REQUEST_PIN0_INDEX, UBI_PIO_INPUT));
+			printf("request pin 1 : %d\r\n",
+					ubi_pio_getPin(SMARTBELT_REQUEST_PORT_INDEX,
+					SMARTBELT_REQUEST_PIN1_INDEX, UBI_PIO_INPUT));
+			printf("request pin 2 : %d\r\n",
+					ubi_pio_getPin(SMARTBELT_REQUEST_PORT_INDEX,
+					SMARTBELT_REQUEST_PIN2_INDEX, UBI_PIO_INPUT));
+			printf("request pin 3 : %d\r\n",
+					ubi_pio_getPin(SMARTBELT_REQUEST_PORT_INDEX,
+					SMARTBELT_REQUEST_PIN3_INDEX, UBI_PIO_INPUT));
+			printf("*************************************\r\n");
+			break;
+		case BUTTON_RESULT:
+			ubi_pio_togglePin(PORTD, 31);
+			printf("==========================================\r\n");
+			printf("from peripheral : \r\n");
+			for (i = 0; i < SMARTBELT_PACKET_DATA_SIZE; i++) {
+				printf("%d : %x\r\n", i, packet_buffer[i]);
+			}
+			printf("==========================================\r\n");
+			break;
+		case BUTTON_RESET:
+			printf("reset\r\n");
+			ubi_pio_clearPin(PORTD, 25);
+
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+static void module_test_task(void) {
+	int r;
+
+	uint8_t message[SMARTBELT_PACKET_DATA_SIZE] = { 0xb1, 0xb2, 0xb3, 0xb4,
+			0xb5, 0xb6, 0xb7, 0xb8 };
+
+	for (;;) {
+		r = sem_take(module_test_sem_pt);
+		if (0 != r) {
+			logme("fail at sem_give\r\n");
+		}
+		while (1) {
+			smartbelt_sendMessage(APP_BUTTON_TEST_0_ID, SMARTBELT_CMD_READ, 8,
+					message);
+			task_sleep(200);
+		}
+	}
+}
+
+/* button id : 0x11 */
+/* peripheral module i2c address : 0x12 */
+/* button name : buttonapp */
+/* priority : HIGH( == 2) */
+/* need to set information */
+
+int button_init(void) {
+	int r;
+	int i;
+
+	r = task_create(NULL, test_function, NULL, task_getmiddlepriority(), 256,
+			"test");
+	if (0 != r) {
+		logme("fail at task_create\r\n");
+	}
+
+	r = task_create(NULL, module_test_task, NULL, task_getmiddlepriority() - 1, 256, "testtt");
+	if (0 != r) {
+		logme("fail at task_create\r\n");
+	}
+
+	r = msgq_create(&button_msgq_pt, BUTTON_BUFFER_SIZE, BUTTON_BUFFER_COUNT);
+	if (0 != r) {
+		logme("fail at msgq_create\r\n");
+	}
+
+	r = sem_create(&module_test_sem_pt);
+	if (0 != r) {
+		logme("fail at sem_create\r\n");
+	}
+
+	/* button */
+	ubi_pio_interrupt_config(PORTA, BUTTON_TEST_0, TEST_ATTR_RISE,
+			button_handler);
+	ubi_pio_interrupt_config(PORTA, BUTTON_TEST_1, TEST_ATTR_RISE,
+			button_handler);
+	ubi_pio_interrupt_config(PORTA, BUTTON_SHOW, TEST_ATTR_RISE,
+			button_handler);
+	ubi_pio_interrupt_config(PORTA, BUTTON_RESET, TEST_ATTR_RISE,
+			button_handler);
+
+	ubi_pio_output_config(PORTD, 25, 1, 1);
+
+	smartbelt_configModule(APP_BUTTON_TEST_0_ID, "button",
+	APP_BUTTON_TEST_0_PRIORITY, button_msgq_pt);
+	smartbelt_configModule(APP_BUTTON_TEST_1_ID, "button",
+	APP_BUTTON_TEST_1_PRIORITY, button_msgq_pt);
+
+	return 0;
+}
+

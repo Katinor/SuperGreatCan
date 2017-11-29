@@ -1,0 +1,77 @@
+/*
+ * lib_sensor.h
+ *
+ *  Created on: 2015. 7. 8.
+ *      Author: minsu
+ */
+
+#ifndef APPLICATION_LIB_SENSOR_ITF_LIB_SENSOR_H_
+#define APPLICATION_LIB_SENSOR_ITF_LIB_SENSOR_H_
+
+
+#include <stdio.h>
+#include <stdint.h>
+
+/** @define RCX sensor(00) configuration */
+#define	SEN_CON_00	(1<<5)
+/** @define RCX sensor(01) configuration */
+#define	SEN_CON_01	(1<<6)
+/** @define RCX sensor(02) configuration */
+#define	SEN_CON_02	(1<<7)
+/** @define RCX sensor(03) configuration */
+#define	SEN_CON_03	(1<<8)
+
+/** @define NXT sensor configuration */
+/** @define HJ for DIGIA0 */
+#define NXT_CON_00	(1<<0)
+/** @define HJ for DIGIA1 */
+#define NXT_CON_10	(1<<9)
+/** @define HJ for DIGIB0 */
+#define NXT_CON_01	(1<<10)
+/** @define HJ for DIGIB1 */
+#define NXT_CON_11	(1<<11)
+/** @define HJ for DIGIC0 */
+#define NXT_CON_02	(1<<13)
+/** @define HJ for DIGIC1 */
+#define NXT_CON_12	(1<<14)
+/** @define HJ for DIGID0 */
+#define NXT_CON_03	(1<<16)
+/** @define HJ for DIGID1 */
+#define NXT_CON_13	(1<<17)
+
+/** @define NXT_SENSOR mask configuration */
+#define NXT_MASK	(NXT_CON_00|NXT_CON_01|NXT_CON_02|NXT_CON_03|NXT_CON_10|NXT_CON_11|NXT_CON_12|NXT_CON_13)
+/** @define SEN_SENSOR mask configuration */
+#define	SEN_MASK	(SEN_CON_00|SEN_CON_01|SEN_CON_02|SEN_CON_03)
+
+/** @define NXT 센서 타입 */
+#define NXT_SENSOR					0x0200
+/** @define NXT_TOUCH 센서 */
+#define NXT_SENSOR_TOUCH			0x0201
+/** @define NXT_LIGHT 센서 */
+#define NXT_SENSOR_LIGHT			0x0202
+/** @define NXT_SOUND 센서 */
+#define NXT_SENSOR_SOUND			0x0203
+/** @define NXT_GYRO 센서 */
+#define NXT_SENSOR_GYRO				0x0204
+
+/** @define NXT_DIGITAL 센서 타입 */
+#define NXT_DIGITAL_SENSOR			0x0300
+/** @define NXT_DIGITAL_ACCEL 센서 */
+#define NXT_DIGITAL_SENSOR_ACCEL	0x0301
+/** @define NXT_DIGITAL_SONA 센서 */
+#define NXT_DIGITAL_SENSOR_SONA		0x0302
+
+/** @define 센서 타입 마스크 */
+#define ESTK_SENSOR_TYPE_MASK		0x0F00
+/** @define ESTK 센서 포트 사이즈 */
+#define ESTK_SENSOR_PORT_SIZE		4
+
+void lib_sensor_component_init( void );
+
+void sensor_init(unsigned short port0_sensor_type, unsigned short port1_sensor_type,
+		unsigned short port2_sensor_type, unsigned short port3_sensor_type);
+
+int sensor_get(char port);
+void set_digital_sensor(unsigned char port);
+#endif /* APPLICATION_LIB_SENSOR_ITF_LIB_SENSOR_H_ */

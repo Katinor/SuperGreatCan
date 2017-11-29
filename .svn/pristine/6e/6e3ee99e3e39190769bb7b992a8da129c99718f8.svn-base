@@ -1,0 +1,67 @@
+/*
+ * lib_ultrasonic.c
+ *
+ *  Created on: 2015. 7. 15.
+ *      Author: minsu
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sam4e.h>
+
+#include "itf_ubinos/itf/bsp.h"
+#include "itf_ubinos/itf/ubinos.h"
+
+#include "lib_ubi_pio/itf/lib_ubi_pio.h"
+#include "../kernel/porting/lib_sam4e/sam/utils/cmsis/sam4e/include/sam4e16e.h"
+#include "../kernel/porting/lib_sam4e/sam/utils/cmsis/sam4e/include/component/tc.h"
+#include "../itf/lib_ultrasonic_sensor.h"
+#include "pio/pio.h"
+
+void timer_for_ultrasonic_sensor_init(void){
+	unsigned int dummy;
+
+	pmc_enable_periph_clk(ID_TC1);
+	TC0->TC_CHANNEL[1].TC_CCR=TC_CCR_CLKDIS;
+	TC0->TC_CHANNEL[1].TC_IDR=0xFFFFFFFF;
+
+	dummy=TC0->TC_CHANNEL[1].TC_SR;
+
+	TC0->TC_CHANNEL[1].TC_CMR=TC_CMR_TCCLKS_TIMER_CLOCK4;
+	TC0->TC_CHANNEL[1].TC_CCR=TC_CCR_CLKEN;
+}
+
+void delay_us(unsigned int time_us){
+    unsigned int i;
+	/* user_defined busywaiting function */
+    // 4*(11 cycles) + 4 cycles = 48 cycles = 1 us for 48MHz
+    for(i = 0; i < time_us; i++)			// 4 cycle
+    {
+    	//for(j = 0; j < 4; j++)				// 4 cyclec
+    	//{
+    		__NOP();__NOP();
+    		__NOP();__NOP();
+    		__NOP();__NOP();
+    		__NOP();
+    	//}
+    }
+}
+
+void ultrasonic_sequence(Pin* p, PinUbi* pu){
+	ubi_pio_output_config(pu->port,pu->pin_num,UBI_PIO_LOW_LEVEL,UBI_PIO_PULL_UP);
+
+	ubi_pio_clearPin(pu->port,pu->pin_num);
+	delay_us(125);
+
+	ubi_pio_setPin(pu->port,pu->pin_num);
+	delay_us(5);
+
+	ubi_pio_clearPin(pu->port,pu->pin_num);
+	delay_us(125);
+	ubi_pio_input_config(pu->port,pu->pin_num,pu->attr);
+
+	//ubi_pio_interrupt_reconfig(PORTC,23,UBI_PIO_DEGLITCH|UBI_PIO_DEBOUNCE);
+	pio_enable_interrupt(p->pio,p->mask);
+
+}

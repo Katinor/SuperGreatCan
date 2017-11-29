@@ -1,0 +1,134 @@
+/*
+ * lib_CMPS10.h
+ *
+ *  Created on: 2015. 7. 20.
+ *      Author: Taemin
+ */
+
+#ifndef APPLICATION_lib_CMPS10_ITF_LIB_CMPS10_H_
+#define APPLICATION_lib_CMPS10_ITF_LIB_CMPS10_H_
+
+
+#include <stdio.h>
+#include <stdint.h>
+#include "../kernel/driver/lib_ubi_pio/itf/lib_ubi_pio.h"
+#include "../kernel/porting/lib_sam4e/sam/drivers/pio/pio.h"
+#include "../kernel/porting/lib_sam4e/sam/utils/cmsis/sam4e/include/sam4e16e.h"
+
+#ifndef ASSERT
+	#define ASSERT(condition, ...)  { \
+		if (!(condition)) { \
+			printf("-F- ASSERT: "); \
+			printf(__VA_ARGS__); \
+			while (1); \
+		} \
+    }
+#endif
+
+#ifndef SANITY_ERROR
+	#define SANITY_ERROR            "Sanity check failed at %s:%d\n\r"
+#endif
+
+#ifndef SANITY_CHECK
+	#define SANITY_CHECK(condition) ASSERT(condition, SANITY_ERROR, __FILE__, __LINE__)
+#endif
+
+#ifndef TRACE_DEBUG
+	#define TRACE_DEBUG(...)      { }
+#endif
+
+#ifndef TRACE_ERROR
+	#define TRACE_ERROR(...)      { printf("-E- " __VA_ARGS__); }
+#endif
+
+typedef struct {
+    /// Bitmask indicating which pin(s) to configure.
+    unsigned int mask;
+    /// Pointer to the PIO controller which has the pin(s).
+    Pio    *pio;
+    /// Peripheral ID of the PIO controller which has the pin(s).
+    unsigned char id;
+    /// Pin type.
+    uint32_t type;
+    /// Pin attribute.
+    unsigned char attribute;
+} Pin;
+
+#ifndef	BOARD_MCK
+	#define BOARD_MCK               		48000000
+#endif
+
+#define TWID_ERROR_BUSY              	1
+#define ASYNC_STATUS_PENDING        	0xFF
+#define TWITIMEOUTMAX 					50000
+#define TWCK_100K						(100000)
+#define PIO_LISTSIZE(pPins)    			(sizeof(pPins) / sizeof(Pin))
+#define PIN_TWI_TWD0    				{ 0x1 << 3, PIOA, ID_PIOA, PIO_PERIPH_A, PIO_DEFAULT }
+#define PIN_TWI_TWCK0   				{ 0x1 << 4, PIOA, ID_PIOA, PIO_PERIPH_A, PIO_DEFAULT }
+#define PINS_TWI0     					PIN_TWI_TWD0, PIN_TWI_TWCK0
+#define CMPS10_ADDRESS					0x60
+#define	BEARING_ADDRESS					0x02
+#define PITCH_ADDRESS					0x04
+#define ROLL_ADDRESS					0x06
+#define READ_SIZE						6
+#define IADDR_SIZE						1
+
+typedef struct _Async {
+    /** Asynchronous transfer status.*/
+    volatile uint8_t status;
+    /** Callback function to invoke when transfer completes or fails.*/
+    void *callback;
+    /** Driver storage area; do not use.*/
+    uint32_t pStorage[4];
+} Async;
+
+typedef void (*TwiCallback)(Async *);
+typedef struct _AsyncTwi {
+
+    /** Asynchronous transfer status. */
+    volatile uint8_t status;
+    // Callback function to invoke when transfer completes or fails.*/
+    TwiCallback callback;
+    /** Pointer to the data buffer.*/
+    uint8_t *pData;
+    /** Total number of bytes to transfer.*/
+    uint32_t num;
+    /** Number of already transferred bytes.*/
+    uint32_t transferred;
+
+} AsyncTwi;
+
+typedef struct _Twid {
+    /** Pointer to the underlying TWI peripheral.*/
+    Twi *pTwi;
+    /** Current asynchronous transfer being processed.*/
+    Async *pTransfer;
+} Twid;
+
+extern void TWI_ConfigureMaster(Twi *pTwi, uint32_t twck, uint32_t mck);
+extern void TWID_Initialize(Twid *pTwid, Twi *pTwi);
+void TWI_StartRead(Twi *pTwi, uint8_t address, uint32_t iaddress, uint8_t isize);
+void TWI_Stop(Twi *pTwi);
+void TWI_EnableIt(Twi *pTwi, uint32_t sources);
+extern uint8_t TWID_Read(
+    Twid *pTwid,
+    uint8_t address,
+    uint32_t iaddress,
+    uint8_t isize,
+    uint8_t *pData,
+    uint32_t num,
+    Async *pAsync);
+uint8_t TWI_ReadByte(Twi *pTwi);
+uint8_t TWI_TransferComplete(Twi *pTwi);
+uint8_t TWI_ByteReceived(Twi *pTwi);
+
+void Init_i2c(Twid *twid);
+
+//static	Twid	twid;
+static const Pin pins_twi[2]= {PIN_TWI_TWD0, PIN_TWI_TWCK0};
+
+#ifndef power
+	unsigned int power(unsigned int x, unsigned int y);
+#endif
+
+#endif /* APPLICATION_lib_CMPS10_ITF_LIB_CMPS10_H_ */

@@ -1,0 +1,80 @@
+/*
+ * lib_sora_lf_service_manager.h
+ *
+ *  Created on: 2015. 7. 18.
+ *      Author: jaegeun
+ */
+
+#ifndef APPLICATION_SORA_LIB_SORA_SUPPORT_ITF_LIB_SORA_LF_SERVICE_MANAGER_H_
+#define APPLICATION_SORA_LIB_SORA_SUPPORT_ITF_LIB_SORA_LF_SERVICE_MANAGER_H_
+
+// lf msgq ref
+#define LF_DELAY_NONE_SET		0
+#define LF_SVC_MSGQSIZE_MAX		16
+#define	LF_SVC_MSGCNT_MAX		10
+
+#define LF_SVC_CMD_MSGQSIZE_MAX		1
+#define	LF_SVC_CMD_MSGCNT_MAX		10
+
+// usr chk ref
+#define LF_USR_CHK_ACK			0xE6
+
+#define LF_USR_TASK_START	1
+#define LF_USR_TASK_STOP	0
+
+// lf service state enum
+typedef enum LF_SVC {
+	LF_SVC_NONE,
+	LF_SVC_USR_SEARCH,
+	LF_SVC_USR_SEARCH_STOP,
+	LF_SVC_NORMAL_BURST,
+	LF_SVC_RELIABLE_REGION_CHK,
+	LF_SVC_USR_FOLLOW,
+	LF_SVC_USR_LEAD,
+	LF_SVC_USR_RECOG_STOP,
+	LF_SVC_STOP,
+} lf_svc_t;
+
+enum LF_SVC_USR_CHK {
+	LF_SVC_USR_CHK_ACK_FAIL,
+	LF_SVC_USR_CHK_ACK_OK,
+};
+
+typedef struct _LF_Data
+{
+	uint8_t cmd;
+	uint8_t firstAnt_Att;
+	uint8_t firstAnt_Dis;
+	uint8_t secondAnt_Att;
+	uint8_t secondAnt_Dis;
+	uint8_t region;
+}LF_DATA;
+
+enum lf_data_idx
+{
+	LF_DAT_CMD_IDX,
+	LF_DAT_FIRST_ANT_ATT_IDX,
+	LF_DAT_FIRST_ANT_DIS_IDX,
+	LF_DAT_SECOND_ANT_ATT_IDX,
+	LF_DAT_SECOND_ANT_DIS_IDX,
+	LF_DAT_REGION_IDX,
+};
+
+typedef enum LF_SAMPLE_DAT{
+	LF_SAMPLE_DISTANCE_IDX,
+	LF_SAMPLE_DIRECTION_IDX,
+} lf_sample_idx_t;
+
+// external interface
+void lfServiceInit( void );
+void send_lf_svc(lf_svc_t mode);		// lf svc mode trigger function - ext itf
+void send_lf_dis_msgq(unsigned char * msg);		// ibu manager -> lf svc manager to send distance of each antenna
+void ble_connection_ok_sem( void );
+void usr_check_ok_sem( void );
+
+void sendMsgqToLfController(int cmd, int delayset);
+
+// extern
+extern uint8_t _g_isIbuBleConnected;	// extern ble connected status
+
+#endif /* APPLICATION_SORA_LIB_SORA_SUPPORT_ITF_LIB_SORA_LF_SERVICE_MANAGER_H_ */

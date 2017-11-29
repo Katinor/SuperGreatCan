@@ -1,0 +1,177 @@
+/*
+ Copyright (C) 2009 Sung Ho Park
+ Contact: ubinos.org@gmail.com
+
+ This file is part of the exe_helloworld component of the Ubinos.
+
+ GNU General Public License Usage
+ This file may be used under the terms of the GNU
+ General Public License version 3.0 as published by the Free Software
+ Foundation and appearing in the file license_gpl3.txt included in the
+ packaging of this file. Please review the following information to
+ ensure the GNU General Public License version 3.0 requirements will be
+ met: http://www.gnu.org/copyleft/gpl.html.
+
+ GNU Lesser General Public License Usage
+ Alternatively, this file may be used under the terms of the GNU Lesser
+ General Public License version 2.1 as published by the Free Software
+ Foundation and appearing in the file license_lgpl.txt included in the
+ packaging of this file. Please review the following information to
+ ensure the GNU Lesser General Public License version 2.1 requirements
+ will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+
+ Commercial Usage
+ Alternatively, licensees holding valid commercial licenses may
+ use this file in accordance with the commercial license agreement
+ provided with the software or, alternatively, in accordance with the
+ terms contained in a written agreement between you and rightful owner.
+ */
+
+#include "../ubiconfig.h"
+
+#include <stdio.h>
+#include <sam4e.h>
+
+
+#include "itf_ubinos/itf/bsp.h"
+#include "itf_ubinos/itf/ubinos.h"
+//#include "sysclk.h"
+
+#include "lib_lowpower/itf/lib_lowpower.h"
+#include "lib_ubi_pio/itf/lib_ubi_pio.h"
+
+//#define CONF_UART_BAUDRATE   (115200UL)
+
+static void rootfunc(void * arg);
+static void test00(void);
+static void test01(void);
+
+sem_pt test_sem_pt;
+msgq_pt test_msgq_pt;
+
+
+//void RTT_Handler(void)
+//{
+//	uint32_t ul_status;
+//
+//	/*Get RTT status*/
+//	ul_status = rtt_get_status(RTT);
+//
+//	/*Alarm*/
+//	if((ul_status & RTT_SR_ALMS) == RTT_SR_ALMS)
+//	{
+//	}
+//}
+
+
+int usrmain(int argc, char * argv[]) {
+	int r;
+
+	printf("\n\n\n\r");
+	printf(
+			"================================================================================\n\r");
+	printf("exe_hrtick (build time: %s %s)\n\r", __TIME__, __DATE__);
+	printf(
+			"================================================================================\n\r");
+
+//	r = task_create(NULL, rootfunc, NULL, task_getmiddlepriority(), 256, "root");
+//	if (0 != r) {
+//		logme("fail at task_create\r\n");
+//	}
+
+	r = task_create(NULL, test00, NULL, task_getmiddlepriority(), 256, "00");
+	if (0 != r) {
+		logme("fail at task_create\r\n");
+	}
+
+//	r = task_create(NULL, test01, NULL, task_getmiddlepriority(), 256, "01");
+//	if (0 != r) {
+//		logme("fail at task_create\r\n");
+//	}
+
+	r = sem_create(&test_sem_pt);
+	if (0 != r) {
+		logme("fail at sem_create\r\n");
+	}
+
+
+r = msgq_create(&test_msgq_pt, 10, 19);
+if(0 != r)
+{
+	logme("fail at msge_create\r\n");
+}
+
+//	Power_Manager_Init();
+//	init_low_power();
+	ubik_comp_start();
+
+	return 0;
+}
+
+static void test00(void)
+{
+	for(;;)
+	{
+//		printf("give\r\n");
+//		sem_give(test_sem_pt);
+		printf("task00\r\n");
+		task_sleep(1000);
+	}
+}
+static void test01(void)
+{
+	uint8_t buffer[10];
+	for(;;)
+	{
+//		sem_take(test_sem_pt);
+//		msgq_receive(test_msgq_pt, buffer);
+//		printf("take\r\n");
+	}
+}
+
+
+static void rootfunc(void * arg) {
+	int r;
+
+	printf("test\r\n");
+
+	init_low_power();
+
+	/* Configure RTT for a 1 second tick interrupt */
+//	rtt_sel_source(RTT, false);
+//	rtt_init(RTT, 32768);	// 1sec is 32868
+//
+//	/* Enable RTT interrupt */
+//	NVIC_DisableIRQ(RTT_IRQn);
+//	NVIC_ClearPendingIRQ(RTT_IRQn);
+//	//NVIC_SetPriority(RTT_IRQn, 0);
+//	intr_connectisr(RTT_IRQn, RTT_Handler, intr_gethighestpriority(), 0);
+//	NVIC_EnableIRQ(RTT_IRQn);
+//	rtt_enable_interrupt(RTT, RTT_MR_RTTINCIEN);
+//	rtt_write_alarm_time(RTT, 3);
+
+
+
+	for (;;) {
+//		task_sleep(1000);//test for backup mode
+		//ubi_sleep_mode(CK8MHz_RC);
+//		ubi_wait_mode(PIN_WKUP_14, WAIT_NORMAL, 0);
+//		ubi_wait_mode(PIN_WKUP_14, WAIT_STARTUP_FAST, true);
+//		ubi_backup_mode(PIN_WKUP_14, HIGH_TO_LOW);
+		printf("test\r\n");
+		task_sleep(1000);
+
+		/* Configure RTT for a 1 second tick interrupt */
+//		rtt_sel_source(RTT, false);
+//		rtt_init(RTT, 32768);
+//
+//		/* Enable RTT interrupt */
+//		NVIC_DisableIRQ(RTT_IRQn);
+//		NVIC_ClearPendingIRQ(RTT_IRQn);
+//		//NVIC_SetPriority(RTT_IRQn, 0);
+//		intr_connectisr(RTT_IRQn, RTT_Handler, intr_gethighestpriority(), 0);
+//		NVIC_EnableIRQ(RTT_IRQn);
+//		rtt_enable_interrupt(RTT, RTT_MR_RTTINCIEN);
+//		rtt_write_alarm_time(RTT, 3);
+	}
+}
