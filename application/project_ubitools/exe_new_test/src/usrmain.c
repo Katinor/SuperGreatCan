@@ -79,9 +79,9 @@ mutex_pt _g_mutex;
 	Calibration Definition
  ------------------------------------------------------------------------- */
 #define MOTOR_GAIN 1000
-#define TIME_OUT 300
+#define TIME_OUT 100
 #define ROTATE_GAIN1 1
-#define ROTATE_GAIN2 200
+#define ROTATE_GAIN2 15
 /* -------------------------------------------------------------------------
 	State Definition
  ------------------------------------------------------------------------- */
@@ -99,6 +99,8 @@ void bin_open(void);
 void bin_close(void);
 void bin_control(void);
 void bin_status(void);
+void sw0_isr(void);
+void sw1_isr(void);
 
 /* -------------------------------------------------------------------------
 	Global variables
@@ -122,7 +124,8 @@ int usrmain(int argc, char * argv[]) {
 	motor_init();
 	encoder_init();
 	mutex_create(&_g_mutex);
-
+	switch_init(sw0_isr,sw1_isr);
+	printf("switch interrupt on");
 	r = task_create(NULL, lcd_outputtask, NULL, task_getmiddlepriority(), 256, "lcd");
 	if (0 != r) {
 		logme("fail at task_create\r\n");
@@ -192,7 +195,7 @@ static void BT_peripheraltask(void * arg){
 				}
 				mutex_unlock(_g_mutex);
 				if(motorset == 1) bin_control();
-				if(motorset == 1) bin_status();
+				if(motorset == 2) bin_status();
 				//send same msg
 				task_sleep(500);
 			}
@@ -231,6 +234,8 @@ void bin_close()
 }
 void bin_status()
 {
+	if(binState == BIN_CLOSE) printf("Bin is Closed currently\n\r");
+	else printf("Bin is opened currently\n\r");
 	print_packet[0] = binState;
 	BT_DATA_SEND(INIT_ROLE_PERIPHERAL, print_packet);
 }
@@ -256,14 +261,22 @@ void motor_turn(int port, int degree)
 	}
 
 	do{
-		buff = encoder_get(port);
+		buff = encoder_get(port) * -1 * swt;
 		diff_degree = (buff) - (deg_buf * ROTATE_GAIN1);
 		speed = ROTATE_GAIN2 * diff_degree * swt;
 		printf("rotate %d progress : swt %d enc %d diff %d speed %d time %d \r\n",degree,swt,buff,diff_degree, speed, timeout);
 		motor_set(port,speed);
 		timeout--;
-		bsp_busywaitms(10);
-	} while ((diff_degree > 0)&&(timeout != 0));
+		bsp_busywaitms(1);
+	} while (((diff_degree) > 0)&&(timeout != 0));
 	printf(" > rotate complete\r\n");
 	motor_set(port,0);
+}
+
+void sw0_isr(void){
+	bin_control();
+}
+
+void sw1_isr(void){
+	led_toggle(LED2);
 }
