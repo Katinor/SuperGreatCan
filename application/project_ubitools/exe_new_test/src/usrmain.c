@@ -72,7 +72,7 @@
 uint8_t print_packet[DATA_SEND_BUFFER_SIZE] = {0,};
 msgq_pt BT_user_event_queue;
 mutex_pt _g_mutex;
-#define MOTOR_PORT   0
+#define MOTOR_PORT   3
 #define S_SENSOR_PORT	0
 #define L_SENSOR_PORT	2
 /* -------------------------------------------------------------------------
@@ -104,10 +104,15 @@ enum binFull
  ------------------------------------------------------------------------- */
 static void lcd_outputtask(void * arg);
 static void BT_peripheraltask(void * arg);
+static void General_controltask(void * arg);
 void bin_open(void);
 void bin_close(void);
 void bin_control(void);
 void bin_status(void);
+void bin_sync(void);
+void bin_hard_open(void);
+void bin_hard_close(void);
+void motor_turn(int port, int degree);
 void sw0_isr(void);
 void sw1_isr(void);
 
@@ -148,6 +153,11 @@ int usrmain(int argc, char * argv[]) {
 		logme("fail at task_create\r\n");
 		printf("fail to create BT_petipheraltask : %d\r\n", r);
 	}
+	r = task_create(NULL, General_controltask, NULL, task_getmiddlepriority(), 256, "pheri");
+	if (0 != r) {
+		logme("fail at task_create\r\n");
+		printf("fail to create General_controltask : %d\r\n", r);
+	}
 	r = msgq_create(&BT_user_event_queue, sizeof(BT_Evt_t), MAIN_MSGQ_MAX_COUNT);
 	if (0 != r) {
 		logme("fail at msgq_create\r\n");
@@ -158,47 +168,15 @@ int usrmain(int argc, char * argv[]) {
 }
 
 static void lcd_outputtask(void * arg){
-	int dist[8];
-	int dist_sum, dist_avg;
 	task_sleep(300);
 	while(1){
 		mutex_lock(_g_mutex);
-		glcdGotoChar(1,5);
-		glcd_printf("binFull : %d", binFull);
-		glcdGotoChar(1,6);
-		glcd_printf("binState : %d", binState);
+		//glcdGotoChar(1,5);
+		//glcd_printf("binFull : %d", binFull);
+		//glcdGotoChar(1,6);
+		//glcd_printf("binState : %d", binState);
 		mutex_unlock(_g_mutex);
-
-		if(binState == BIN_CLOSE){
-			for(int j = 0; j<8; j++)
-			{
-				dist[j] = sensor_get(S_SENSOR_PORT);
-				task_sleep(10);
-			}
-			dist_sum = 0;
-			for(int j = 0; j<8; j++)
-			{
-				dist_sum += dist[j];
-			}
-			dist_avg = dist_sum / 8;
-			if (binFull == BIN_TRUE)
-			{
-				if(dist_avg > CAPACITY_GAIN)
-				{
-					binFull = BIN_75;
-				}
-			}
-			else
-			{
-				if(dist_avg < 3) binFull = BIN_TRUE;
-				else if(dist_avg < CAPACITY_GAIN*1) binFull = BIN_75;
-				else if(dist_avg < CAPACITY_GAIN*2) binFull = BIN_50;
-				else if(dist_avg < CAPACITY_GAIN*3) binFull = BIN_25;
-				else binFull = BIN_0;
-			}
-		}
-		else task_sleep(100);
-		task_sleep(50);
+		task_sleep(200);
 	}
 }
 static void BT_peripheraltask(void * arg){
@@ -237,9 +215,26 @@ static void BT_peripheraltask(void * arg){
 					print_packet[i]=BT_usr_msgRXBuffer.msg[i];
 				}
 				mutex_unlock(_g_mutex);
-				if(motorset == 3) bin_control();
-				if(motorset == 2) bin_status();
-				if(motorset == 1) bin_sync();
+				switch(motorset)
+				{
+				case 5:
+					bin_hard_close();
+					break;
+				case 4:
+					bin_hard_open();
+					break;
+				case 3:
+					bin_control();
+					break;
+				case 2:
+					bin_status();
+					break;
+				case 1:
+					bin_sync();
+					break;
+				default:
+					break;
+				}
 				//send same msg
 				task_sleep(500);
 			}
@@ -257,6 +252,45 @@ static void BT_peripheraltask(void * arg){
 	}
 }
 
+static void General_controltask(void * arg){
+	int dist[8];
+	int dist_sum, dist_avg;
+	for(;;)
+	{
+		if(binState == BIN_CLOSE){
+			for(int j = 0; j<8; j++)
+			{
+				dist[j] = sensor_get(S_SENSOR_PORT);
+				task_sleep(100);
+			}
+			dist_sum = 0;
+			for(int j = 0; j<8; j++)
+			{
+				dist_sum += dist[j];
+			}
+			dist_avg = dist_sum / 8;
+			if (binFull == BIN_TRUE)
+			{
+				if(dist_avg > CAPACITY_GAIN*2)
+				{
+					binFull = BIN_50;
+				}
+			}
+			else
+			{
+				if(dist_avg < CAPACITY_GAIN*1) binFull = BIN_TRUE;
+				else if(dist_avg < CAPACITY_GAIN*2) binFull = BIN_75;
+				else if(dist_avg < CAPACITY_GAIN*3) binFull = BIN_50;
+				else if(dist_avg < CAPACITY_GAIN*4) binFull = BIN_25;
+				else binFull = BIN_0;
+			}
+			printf("check capacity : dist %d level %d\r\n",dist_avg,binFull);
+			task_sleep(200);
+		}
+		else task_sleep(1000);
+	}
+}
+
 void bin_control()
 {
 	bin_status();
@@ -271,6 +305,22 @@ void bin_open()
 	binState = BIN_OPEN;
 }
 
+void bin_hard_open()
+{
+	binState = BIN_OPEN;
+	bin_status();
+	printf("Bin is opened currently\n\r");
+}
+
+void bin_hard_close()
+{
+	binState = BIN_CLOSE;
+	bin_status();
+	printf("Bin is closed currently\n\r");
+}
+
+
+
 void bin_close()
 {
 	motor_turn(MOTOR_PORT,90);
@@ -284,7 +334,7 @@ void bin_status()
 	packet_buff = binFull;
 	packet_buff *= 4;
 	packet_buff += binState;
-	print_packet[0] = binState;
+	print_packet[0] = packet_buff;
 	BT_DATA_SEND(INIT_ROLE_PERIPHERAL, print_packet);
 }
 void bin_sync()
@@ -324,7 +374,8 @@ void motor_turn(int port, int degree)
 		timeout--;
 		bsp_busywaitms(1);
 	} while (((diff_degree) > 0)&&(timeout != 0));
-	printf(" > rotate complete\r\n");
+	buff = encoder_get(port);
+	printf(" > rotate complete : enc %d\r\n",buff);
 	motor_set(port,0);
 }
 
