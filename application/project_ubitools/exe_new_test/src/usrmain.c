@@ -79,10 +79,11 @@ mutex_pt _g_mutex;
 	Calibration Definition
  ------------------------------------------------------------------------- */
 #define MOTOR_GAIN 1000
-#define TIME_OUT 100
+#define TIME_OUT 30
 #define ROTATE_GAIN1 1
 #define ROTATE_GAIN2 15
-#define CAPACITY_GAIN 5
+#define CAPACITY_GAIN 2
+#define CAPACITY_OFFSET 5
 /* -------------------------------------------------------------------------
 	State Definition
  ------------------------------------------------------------------------- */
@@ -124,6 +125,7 @@ int motorset=0;
 int binState=BIN_CLOSE;
 int binCapacity=4;
 int binFull=4;
+int binFixedControl=0;
 /* -------------------------------------------------------------------------
 	Function Definitions
  ------------------------------------------------------------------------- */
@@ -257,6 +259,13 @@ static void General_controltask(void * arg){
 	int dist_sum, dist_avg;
 	for(;;)
 	{
+		if(binFixedControl==1)
+		{
+			if(binState == BIN_OPEN) bin_close();
+			else bin_open();
+			binFixedControl = 0;
+		}
+
 		if(binState == BIN_CLOSE){
 			for(int j = 0; j<8; j++)
 			{
@@ -271,17 +280,19 @@ static void General_controltask(void * arg){
 			dist_avg = dist_sum / 8;
 			if (binFull == BIN_TRUE)
 			{
-				if(dist_avg > CAPACITY_GAIN*2)
+				led_on(LED3);
+				if(dist_avg > CAPACITY_OFFSET+CAPACITY_GAIN*2)
 				{
 					binFull = BIN_50;
 				}
 			}
 			else
 			{
-				if(dist_avg < CAPACITY_GAIN*1) binFull = BIN_TRUE;
-				else if(dist_avg < CAPACITY_GAIN*2) binFull = BIN_75;
-				else if(dist_avg < CAPACITY_GAIN*3) binFull = BIN_50;
-				else if(dist_avg < CAPACITY_GAIN*4) binFull = BIN_25;
+				led_off(LED3);
+				if(dist_avg < CAPACITY_OFFSET+CAPACITY_GAIN*1) binFull = BIN_TRUE;
+				else if(dist_avg < CAPACITY_OFFSET+CAPACITY_GAIN*2) binFull = BIN_75;
+				else if(dist_avg < CAPACITY_OFFSET+CAPACITY_GAIN*3) binFull = BIN_50;
+				else if(dist_avg < CAPACITY_OFFSET+CAPACITY_GAIN*4) binFull = BIN_25;
 				else binFull = BIN_0;
 			}
 			printf("check capacity : dist %d level %d\r\n",dist_avg,binFull);
@@ -331,19 +342,14 @@ void bin_status()
 	int packet_buff;
 	if(binState == BIN_CLOSE) printf("Bin is Closed currently\n\r");
 	else printf("Bin is opened currently\n\r");
-	packet_buff = binFull;
-	packet_buff *= 4;
-	packet_buff += binState;
-	print_packet[0] = packet_buff;
+	print_packet[1] = binFull;
+	print_packet[0] = binState;
 	BT_DATA_SEND(INIT_ROLE_PERIPHERAL, print_packet);
 }
 void bin_sync()
 {
-	int packet_buff;
-	packet_buff = binFull;
-	packet_buff *= 4;
-	packet_buff += binState;
-	print_packet[0] = packet_buff;
+	print_packet[1] = binFull;
+	print_packet[0] = binState;
 	BT_DATA_SEND(INIT_ROLE_PERIPHERAL, print_packet);
 }
 void motor_turn(int port, int degree)
@@ -380,8 +386,7 @@ void motor_turn(int port, int degree)
 }
 
 void sw0_isr(void){
-	if(binState == BIN_OPEN) bin_close();
-	else bin_open();
+	binFixedControl=1;
 }
 
 void sw1_isr(void){
